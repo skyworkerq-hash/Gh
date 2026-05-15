@@ -1,0 +1,24 @@
+# Никогда не коммитим секреты — только README с описанием схемы
+secrets/*
+!secrets/README.md
+!secrets/.gitkeep
+
+# Окружение
+.env
+.env.*
+!.env.example
+
+# Системное
+.DS_Store
+Thumbs.db
+
+# Node / Python кэши, если появятся
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Промежуточные данные песочниц/выгрузок
+/tmp/
+*.log
