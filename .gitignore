@@ -1,7 +1,7 @@
 # Никогда не коммитим секреты — только README с описанием схемы
-secrets/*
-!secrets/README.md
-!secrets/.gitkeep
+claude-vault/secrets/*
+!claude-vault/secrets/README.md
+!claude-vault/secrets/.gitkeep
 
 # Окружение
 .env
