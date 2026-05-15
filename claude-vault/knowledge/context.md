@@ -33,6 +33,21 @@
 - Ветка для разработки: `claude/ai-capabilities-overview-vWBGX`.
 - Репо должно быть **приватным** (пользователь подтвердил требование).
 
+## Установленные community-скилы (через SessionStart-хук)
+
+При старте каждой облачной сессии хук `.claude/hooks/install-community-skills.sh` подключает ~154 скила из 13 репозиториев. Главное по доменам:
+
+- **Планирование/архитектура:** `superpowers-brainstorming`, `superpowers-writing-plans`, `planning-with-files-plan`, `planning-with-files-status`.
+- **Маркетинг (40 скилов):** `marketing-*` — copywriting, SEO, ads, лидген, email, CRO, цены, лендинги. Под бизнес пользователя по БГ это пригодится для собственного маркетинга агентства.
+- **Документы:** `composio-document-pdf`, `-docx`, `-pptx`, `-xlsx` — обработка/генерация документов клиентов (главная боль пользователя!).
+- **Браузер/парсинг:** `agent-browser-agent-browser` — автоматизация веб-сайтов (под мониторинг zakupki.gov.ru).
+- **Текст:** `humanizer` — очистка текстов от AI-духа.
+- **Дизайн:** `anthropic-frontend-design`, `vercel-web-design-guidelines`, `impeccable-impeccable`.
+- **Видео:** `remotion`.
+- **Память:** `supermemory-supermemory` (MCP — отдельно на Mac).
+- **Безопасность/код:** Trail of Bits (73 скила, в основном про аудит кода — пользователю мало релевантно).
+- **Понимание кода:** `understand-anything-*` (тоже больше для кодеров).
+
 ## Активные проекты
 
 - **`tender-monitor`** — первый инструмент: ежедневный мониторинг тендеров с zakupki.gov.ru, фильтрация подходящих лидов под банковские гарантии, отчёт в ваулт.
