@@ -21,15 +21,26 @@ AGENTS_DIR="${HOME}/.claude/agents"
 
 mkdir -p "$CACHE_DIR" "$SKILLS_DIR" "$COMMANDS_DIR" "$AGENTS_DIR"
 
-# repo-spec: "github-owner/repo|local-name"
+# repo-spec: "github-owner/repo|local-name|optional-subpath"
+# If subpath is given, only that path inside the repo is linked as a single skill
+# named <local-name>. Otherwise the script auto-discovers skills using the
+# patterns in install_repo().
 REPOS=(
-  "obra/superpowers|superpowers"
-  "pbakaus/impeccable|impeccable"
-  "OthmanAdi/planning-with-files|planning-with-files"
-  "Lum1104/Understand-Anything|understand-anything"
-  "trailofbits/skills|trailofbits-skills"
-  "vercel-labs/agent-browser|agent-browser"
-  "blader/humanizer|humanizer"
+  # full repos (auto-discovery of all skills)
+  "obra/superpowers|superpowers|"
+  "pbakaus/impeccable|impeccable|"
+  "OthmanAdi/planning-with-files|planning-with-files|"
+  "Lum1104/Understand-Anything|understand-anything|"
+  "trailofbits/skills|trailofbits-skills|"
+  "vercel-labs/agent-browser|agent-browser|"
+  "blader/humanizer|humanizer|"
+  "supermemoryai/supermemory|supermemory|"
+  "coreyhaines31/marketingskills|marketing|"
+  # targeted: only a specific sub-skill from a big repo
+  "remotion-dev/skills|remotion|skills/remotion"
+  "anthropics/skills|anthropic-frontend-design|skills/frontend-design"
+  "vercel-labs/agent-skills|vercel-web-design-guidelines|skills/web-design-guidelines"
+  "ComposioHQ/awesome-claude-skills|composio-document|document-skills"
 )
 
 clone_or_update() {
@@ -67,12 +78,31 @@ link_subdir_contents() {
 
 install_repo() {
   local spec="$1"
-  local repo="${spec%%|*}"
-  local name="${spec##*|}"
+  # spec format: repo|name|subpath
+  IFS='|' read -r repo name subpath <<< "$spec"
   local dest="${CACHE_DIR}/${name}"
 
-  echo "==> ${repo}"
+  echo "==> ${repo}${subpath:+ (only: $subpath)}"
   clone_or_update "$repo" "$dest" || return 0
+
+  # If a subpath is specified, link only that path.
+  # Two cases:
+  #   a) <subpath>/SKILL.md exists → link as a single skill named <name>
+  #   b) <subpath>/* contains SKILL.md files → link each child as <name>-<child>
+  if [ -n "$subpath" ]; then
+    local target="${dest}/${subpath}"
+    if [ -f "${target}/SKILL.md" ]; then
+      ln -sfn "$target" "${SKILLS_DIR}/${name}"
+    elif [ -d "$target" ]; then
+      link_subdir_contents "$target" "$SKILLS_DIR" "${name}"
+    elif [ -f "$target" ]; then
+      mkdir -p "${SKILLS_DIR}/${name}"
+      ln -sfn "$target" "${SKILLS_DIR}/${name}/SKILL.md"
+    else
+      echo "warn: subpath '${subpath}' not found in ${repo}" >&2
+    fi
+    return 0
+  fi
 
   # Common layouts:
   #   <repo>/SKILL.md              → single skill at root
