@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF-редактор</title>
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --panel: #ffffff;
+    --border: #e3e5ea;
+    --text: #1a1d24;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --danger: #dc2626;
+    --warn: #f59e0b;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; color: var(--text); background: var(--bg); }
+  body { display: flex; flex-direction: column; }
+
+  header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 10px 16px; background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  header .filename { color: var(--muted); font-size: 13px; }
+  .spacer { flex: 1; }
+
+  button, label.btn {
+    border: 1px solid var(--border); background: var(--panel);
+    color: var(--text); padding: 7px 12px; border-radius: 6px;
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: background .15s, border-color .15s;
+  }
+  button:hover, label.btn:hover { background: var(--accent-light); border-color: var(--accent); }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button.active { background: var(--accent); color: white; border-color: var(--accent); }
+  button.primary { background: var(--accent); color: white; border-color: var(--accent); }
+  button.primary:hover { background: #1d4ed8; }
+  input[type="file"] { display: none; }
+
+  main { flex: 1; display: flex; min-height: 0; }
+  aside {
+    width: 180px; background: var(--panel); border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 12px;
+  }
+  aside h3 { font-size: 12px; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; letter-spacing: .5px; }
+  .thumb {
+    width: 100%; aspect-ratio: 1/1.41; background: #fafafa;
+    border: 2px solid var(--border); border-radius: 4px;
+    margin-bottom: 8px; cursor: pointer; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .thumb.active { border-color: var(--accent); }
+  .thumb canvas { max-width: 100%; max-height: 100%; }
+  .thumb .pgnum { position: absolute; bottom: 2px; right: 4px; font-size: 10px; background: rgba(0,0,0,.55); color: white; padding: 1px 4px; border-radius: 2px; }
+
+  #viewer {
+    flex: 1; display: flex; flex-direction: column; min-width: 0;
+  }
+  .toolbar {
+    display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+    background: var(--panel); border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .toolbar .sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+  .toolbar input[type="color"] { width: 30px; height: 30px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; padding: 0; }
+  .toolbar .page-info { font-size: 13px; color: var(--muted); }
+  .toolbar input.page-jump { width: 50px; border: 1px solid var(--border); border-radius: 4px; padding: 4px 6px; font-size: 13px; text-align: center; }
+
+  .canvas-area {
+    flex: 1; overflow: auto; background: var(--bg);
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 20px;
+  }
+  .canvas-wrap {
+    position: relative; background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 8px rgba(0,0,0,.08);
+  }
+  .canvas-wrap canvas.pdf-canvas { display: block; }
+  .canvas-wrap canvas.ann-canvas {
+    position: absolute; left: 0; top: 0;
+    cursor: crosshair;
+  }
+  .canvas-wrap canvas.ann-canvas.text-mode { cursor: text; }
+  .canvas-wrap canvas.ann-canvas.idle { cursor: default; }
+
+  .text-input-overlay {
+    position: absolute; border: 1px dashed var(--accent);
+    background: rgba(255,255,255,.95); padding: 4px 6px;
+    font-family: inherit; outline: none; resize: both;
+    min-width: 80px; min-height: 24px;
+  }
+
+  .empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--muted); gap: 20px; padding: 40px;
+  }
+  .empty-state .drop {
+    border: 2px dashed var(--border); border-radius: 12px;
+    padding: 60px 80px; text-align: center; cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .empty-state .drop:hover, .empty-state .drop.over {
+    border-color: var(--accent); background: var(--accent-light);
+  }
+  .empty-state .drop p { margin: 10px 0; }
+  .empty-state .drop p.big { font-size: 18px; color: var(--text); font-weight: 500; }
+
+  .status {
+    position: fixed; bottom: 16px; right: 16px;
+    background: var(--text); color: white; padding: 10px 16px;
+    border-radius: 6px; font-size: 13px; max-width: 320px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    opacity: 0; transform: translateY(10px);
+    transition: opacity .2s, transform .2s; pointer-events: none;
+  }
+  .status.show { opacity: 1; transform: translateY(0); }
+  .status.error { background: var(--danger); }
+
+  /* OCR result panel */
+  #ocr-panel {
+    width: 320px; background: var(--panel); border-left: 1px solid var(--border);
+    display: none; flex-direction: column; padding: 12px;
+  }
+  #ocr-panel.show { display: flex; }
+  #ocr-panel .ocr-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  #ocr-panel h3 { margin: 0; font-size: 14px; flex: 1; }
+  #ocr-panel textarea {
+    flex: 1; border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px; font-size: 13px; resize: none; font-family: inherit;
+    min-height: 200px;
+  }
+  #ocr-panel .ocr-actions { display: flex; gap: 8px; margin-top: 10px; }
+  #ocr-panel .progress { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  @media (max-width: 800px) {
+    aside { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>PDF-редактор</h1>
+  <span class="filename" id="filename"></span>
+  <div class="spacer"></div>
+  <label class="btn" for="file-input">Открыть PDF</label>
+  <input type="file" id="file-input" accept="application/pdf">
+  <button id="download-btn" class="primary" disabled>Скачать</button>
+</header>
+
+<main>
+  <aside id="thumbs-panel" hidden>
+    <h3>Страницы</h3>
+    <div id="thumbs"></div>
+  </aside>
+
+  <div id="viewer">
+    <div class="toolbar" id="toolbar" hidden>
+      <button id="prev-page" title="Предыдущая страница">‹</button>
+      <span class="page-info">
+        <input type="number" id="page-jump" class="page-jump" min="1" value="1">
+        / <span id="total-pages">0</span>
+      </span>
+      <button id="next-page" title="Следующая страница">›</button>
+      <div class="sep"></div>
+      <button id="zoom-out" title="Уменьшить">−</button>
+      <span class="page-info" id="zoom-label">100%</span>
+      <button id="zoom-in" title="Увеличить">+</button>
+      <div class="sep"></div>
+      <button id="tool-pan" class="active" data-tool="pan" title="Просмотр">✋</button>
+      <button id="tool-highlight" data-tool="highlight" title="Подсветка">🖍</button>
+      <button id="tool-draw" data-tool="draw" title="Рисовать">✏️</button>
+      <button id="tool-text" data-tool="text" title="Текст">𝐓</button>
+      <input type="color" id="color-picker" value="#fde047" title="Цвет">
+      <div class="sep"></div>
+      <button id="undo-btn" title="Отменить последнюю аннотацию">↶ Отмена</button>
+      <button id="clear-page-btn" title="Очистить аннотации страницы">Очистить</button>
+      <div class="sep"></div>
+      <button id="ocr-btn" title="Распознать текст на странице">🔍 OCR</button>
+    </div>
+
+    <div class="canvas-area" id="canvas-area">
+      <div class="empty-state" id="empty-state">
+        <div class="drop" id="drop-zone">
+          <p class="big">Перетащите PDF сюда</p>
+          <p>или нажмите «Открыть PDF» наверху</p>
+          <p style="font-size: 12px;">Файл обрабатывается локально в браузере и никуда не загружается.</p>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="canvas-wrap" hidden>
+        <canvas class="pdf-canvas" id="pdf-canvas"></canvas>
+        <canvas class="ann-canvas" id="ann-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="ocr-panel">
+    <div class="ocr-header">
+      <h3>Распознанный текст</h3>
+      <button id="ocr-close" title="Закрыть">×</button>
+    </div>
+    <textarea id="ocr-result" placeholder="Запустите OCR на текущей странице…"></textarea>
+    <div class="progress" id="ocr-progress"></div>
+    <div class="ocr-actions">
+      <button id="ocr-copy">Копировать</button>
+      <button id="ocr-download">Скачать .txt</button>
+    </div>
+  </div>
+</main>
+
+<div class="status" id="status"></div>
+
+<script type="module">
+import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.min.mjs';
+import { PDFDocument, rgb, StandardFonts } from 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs';
+
+const state = {
+  pdfDoc: null,             // pdf.js document
+  pdfBytes: null,           // raw bytes for pdf-lib export
+  fileName: 'document.pdf',
+  currentPage: 1,
+  totalPages: 0,
+  scale: 1.5,
+  tool: 'pan',
+  color: '#fde047',
+  annotations: {},          // { pageNum: [ {type, ...} ] }
+  drawing: false,
+  drawPath: null,
+};
+
+const $ = (id) => document.getElementById(id);
+
+const ui = {
+  fileInput: $('file-input'),
+  filename: $('filename'),
+  downloadBtn: $('download-btn'),
+  thumbsPanel: $('thumbs-panel'),
+  thumbs: $('thumbs'),
+  toolbar: $('toolbar'),
+  emptyState: $('empty-state'),
+  dropZone: $('drop-zone'),
+  canvasWrap: $('canvas-wrap'),
+  canvasArea: $('canvas-area'),
+  pdfCanvas: $('pdf-canvas'),
+  annCanvas: $('ann-canvas'),
+  prevBtn: $('prev-page'),
+  nextBtn: $('next-page'),
+  pageJump: $('page-jump'),
+  totalPages: $('total-pages'),
+  zoomIn: $('zoom-in'),
+  zoomOut: $('zoom-out'),
+  zoomLabel: $('zoom-label'),
+  colorPicker: $('color-picker'),
+  undoBtn: $('undo-btn'),
+  clearPageBtn: $('clear-page-btn'),
+  ocrBtn: $('ocr-btn'),
+  ocrPanel: $('ocr-panel'),
+  ocrClose: $('ocr-close'),
+  ocrResult: $('ocr-result'),
+  ocrProgress: $('ocr-progress'),
+  ocrCopy: $('ocr-copy'),
+  ocrDownload: $('ocr-download'),
+  status: $('status'),
+};
+
+function showStatus(msg, type = 'info', ms = 2500) {
+  ui.status.textContent = msg;
+  ui.status.classList.toggle('error', type === 'error');
+  ui.status.classList.add('show');
+  clearTimeout(showStatus._t);
+  if (ms > 0) showStatus._t = setTimeout(() => ui.status.classList.remove('show'), ms);
+}
+
+// ---------- File loading ----------
+ui.fileInput.addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (f) loadFile(f);
+});
+
+['dragenter', 'dragover'].forEach(ev =>
+  ui.dropZone.addEventListener(ev, e => { e.preventDefault(); ui.dropZone.classList.add('over'); })
+);
+['dragleave', 'drop'].forEach(ev =>
+  ui.dropZone.addEventListener(ev, e => { e.preventDefault(); ui.dropZone.classList.remove('over'); })
+);
+ui.dropZone.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0];
+  if (f && f.type === 'application/pdf') loadFile(f);
+  else showStatus('Это не PDF-файл', 'error');
+});
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => {
+  e.preventDefault();
+  if (state.pdfDoc) return;  // only when no file loaded
+  const f = e.dataTransfer.files[0];
+  if (f && f.type === 'application/pdf') loadFile(f);
+});
+
+async function loadFile(file) {
+  showStatus('Загрузка PDF...', 'info', 0);
+  try {
+    state.pdfBytes = new Uint8Array(await file.arrayBuffer());
+    state.fileName = file.name;
+    state.annotations = {};
+    state.currentPage = 1;
+    // Copy bytes for pdf.js (it transfers the buffer)
+    const pdfjsBytes = state.pdfBytes.slice(0);
+    state.pdfDoc = await pdfjsLib.getDocument({ data: pdfjsBytes }).promise;
+    state.totalPages = state.pdfDoc.numPages;
+
+    ui.filename.textContent = file.name;
+    ui.totalPages.textContent = state.totalPages;
+    ui.pageJump.max = state.totalPages;
+    ui.emptyState.hidden = true;
+    ui.canvasWrap.hidden = false;
+    ui.toolbar.hidden = false;
+    ui.thumbsPanel.hidden = false;
+    ui.downloadBtn.disabled = false;
+
+    await renderPage(1);
+    renderThumbs();
+    showStatus(`Открыто: ${state.totalPages} стр.`);
+  } catch (err) {
+    console.error(err);
+    showStatus('Не удалось открыть PDF: ' + err.message, 'error', 5000);
+  }
+}
+
+// ---------- Render ----------
+async function renderPage(num) {
+  state.currentPage = num;
+  ui.pageJump.value = num;
+  const page = await state.pdfDoc.getPage(num);
+  const viewport = page.getViewport({ scale: state.scale });
+  const ctx = ui.pdfCanvas.getContext('2d');
+
+  // High-DPI
+  const dpr = window.devicePixelRatio || 1;
+  ui.pdfCanvas.width = viewport.width * dpr;
+  ui.pdfCanvas.height = viewport.height * dpr;
+  ui.pdfCanvas.style.width = viewport.width + 'px';
+  ui.pdfCanvas.style.height = viewport.height + 'px';
+  ui.annCanvas.width = viewport.width * dpr;
+  ui.annCanvas.height = viewport.height * dpr;
+  ui.annCanvas.style.width = viewport.width + 'px';
+  ui.annCanvas.style.height = viewport.height + 'px';
+
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, viewport.width, viewport.height);
+  await page.render({ canvasContext: ctx, viewport }).promise;
+
+  drawAnnotations();
+  updateThumbActive();
+}
+
+function drawAnnotations() {
+  const ctx = ui.annCanvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+  const w = ui.annCanvas.width / dpr, h = ui.annCanvas.height / dpr;
+  ctx.clearRect(0, 0, w, h);
+  const list = state.annotations[state.currentPage] || [];
+  for (const a of list) drawOne(ctx, a);
+}
+
+function drawOne(ctx, a) {
+  if (a.type === 'highlight') {
+    ctx.fillStyle = a.color;
+    ctx.globalAlpha = 0.4;
+    ctx.fillRect(a.x, a.y, a.w, a.h);
+    ctx.globalAlpha = 1;
+  } else if (a.type === 'draw') {
+    ctx.strokeStyle = a.color;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    if (a.points.length) {
+      ctx.moveTo(a.points[0].x, a.points[0].y);
+      for (let i = 1; i < a.points.length; i++) ctx.lineTo(a.points[i].x, a.points[i].y);
+      ctx.stroke();
+    }
+  } else if (a.type === 'text') {
+    ctx.fillStyle = a.color;
+    ctx.font = `${a.size || 14}px sans-serif`;
+    ctx.textBaseline = 'top';
+    // multi-line
+    const lines = a.text.split('\n');
+    let y = a.y;
+    for (const line of lines) { ctx.fillText(line, a.x, y); y += (a.size || 14) * 1.2; }
+  }
+}
+
+// ---------- Thumbnails ----------
+async function renderThumbs() {
+  ui.thumbs.innerHTML = '';
+  for (let i = 1; i <= state.totalPages; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'thumb' + (i === state.currentPage ? ' active' : '');
+    wrap.dataset.page = i;
+    const c = document.createElement('canvas');
+    wrap.appendChild(c);
+    const num = document.createElement('span');
+    num.className = 'pgnum'; num.textContent = i;
+    wrap.appendChild(num);
+    ui.thumbs.appendChild(wrap);
+    wrap.addEventListener('click', () => renderPage(i));
+    // render small
+    state.pdfDoc.getPage(i).then(p => {
+      const vp = p.getViewport({ scale: 0.2 });
+      c.width = vp.width; c.height = vp.height;
+      p.render({ canvasContext: c.getContext('2d'), viewport: vp });
+    });
+  }
+}
+function updateThumbActive() {
+  ui.thumbs.querySelectorAll('.thumb').forEach(el =>
+    el.classList.toggle('active', +el.dataset.page === state.currentPage));
+}
+
+// ---------- Navigation ----------
+ui.prevBtn.addEventListener('click', () => { if (state.currentPage > 1) renderPage(state.currentPage - 1); });
+ui.nextBtn.addEventListener('click', () => { if (state.currentPage < state.totalPages) renderPage(state.currentPage + 1); });
+ui.pageJump.addEventListener('change', e => {
+  const n = Math.max(1, Math.min(state.totalPages, +e.target.value || 1));
+  renderPage(n);
+});
+
+// ---------- Zoom ----------
+ui.zoomIn.addEventListener('click', () => { state.scale = Math.min(4, state.scale + 0.25); updateZoom(); });
+ui.zoomOut.addEventListener('click', () => { state.scale = Math.max(0.5, state.scale - 0.25); updateZoom(); });
+function updateZoom() {
+  ui.zoomLabel.textContent = Math.round(state.scale * 100 / 1.5) + '%';
+  if (state.pdfDoc) renderPage(state.currentPage);
+}
+
+// ---------- Tools ----------
+const toolButtons = document.querySelectorAll('button[data-tool]');
+toolButtons.forEach(b => b.addEventListener('click', () => setTool(b.dataset.tool)));
+function setTool(t) {
+  state.tool = t;
+  toolButtons.forEach(b => b.classList.toggle('active', b.dataset.tool === t));
+  ui.annCanvas.classList.toggle('text-mode', t === 'text');
+  ui.annCanvas.classList.toggle('idle', t === 'pan');
+}
+ui.colorPicker.addEventListener('input', e => state.color = e.target.value);
+
+ui.undoBtn.addEventListener('click', () => {
+  const list = state.annotations[state.currentPage];
+  if (list && list.length) { list.pop(); drawAnnotations(); }
+});
+ui.clearPageBtn.addEventListener('click', () => {
+  if (!confirm('Удалить все аннотации на этой странице?')) return;
+  state.annotations[state.currentPage] = [];
+  drawAnnotations();
+});
+
+// ---------- Annotation input ----------
+function getPos(e) {
+  const rect = ui.annCanvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+function pushAnnotation(a) {
+  if (!state.annotations[state.currentPage]) state.annotations[state.currentPage] = [];
+  state.annotations[state.currentPage].push(a);
+}
+
+ui.annCanvas.addEventListener('mousedown', e => {
+  if (state.tool === 'pan') return;
+  if (state.tool === 'text') {
+    insertTextAt(getPos(e));
+    return;
+  }
+  const pos = getPos(e);
+  if (state.tool === 'highlight') {
+    state.drawing = { type: 'highlight', start: pos, current: pos };
+  } else if (state.tool === 'draw') {
+    state.drawPath = { type: 'draw', color: state.color, points: [pos] };
+    state.drawing = true;
+  }
+});
+ui.annCanvas.addEventListener('mousemove', e => {
+  if (!state.drawing) return;
+  const pos = getPos(e);
+  if (state.tool === 'highlight') {
+    state.drawing.current = pos;
+    drawAnnotations();
+    const a = state.drawing;
+    const ctx = ui.annCanvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.scale(dpr, dpr);
+    ctx.fillStyle = state.color; ctx.globalAlpha = 0.4;
+    ctx.fillRect(Math.min(a.start.x, a.current.x), Math.min(a.start.y, a.current.y),
+                 Math.abs(a.current.x - a.start.x), Math.abs(a.current.y - a.start.y));
+    ctx.globalAlpha = 1;
+  } else if (state.tool === 'draw') {
+    state.drawPath.points.push(pos);
+    drawAnnotations();
+    const ctx = ui.annCanvas.getContext('2d');
+    drawOne(ctx, state.drawPath);
+  }
+});
+ui.annCanvas.addEventListener('mouseup', () => {
+  if (!state.drawing) return;
+  if (state.tool === 'highlight') {
+    const a = state.drawing;
+    const w = Math.abs(a.current.x - a.start.x), h = Math.abs(a.current.y - a.start.y);
+    if (w > 5 && h > 5) {
+      pushAnnotation({ type: 'highlight', color: state.color,
+        x: Math.min(a.start.x, a.current.x), y: Math.min(a.start.y, a.current.y), w, h });
+    }
+  } else if (state.tool === 'draw') {
+    if (state.drawPath.points.length > 1) pushAnnotation(state.drawPath);
+    state.drawPath = null;
+  }
+  state.drawing = false;
+  drawAnnotations();
+});
+
+function insertTextAt(pos) {
+  const ta = document.createElement('textarea');
+  ta.className = 'text-input-overlay';
+  ta.style.left = pos.x + 'px';
+  ta.style.top = pos.y + 'px';
+  ta.style.color = state.color;
+  ta.style.fontSize = '14px';
+  ta.rows = 2; ta.cols = 20;
+  ui.canvasWrap.appendChild(ta);
+  ta.focus();
+  const commit = () => {
+    const text = ta.value.trim();
+    if (text) {
+      pushAnnotation({ type: 'text', text, x: pos.x, y: pos.y, color: state.color, size: 14 });
+    }
+    ta.remove();
+    drawAnnotations();
+  };
+  ta.addEventListener('blur', commit);
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { ta.value = ''; ta.blur(); }
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); ta.blur(); }
+  });
+}
+
+// ---------- OCR ----------
+let tesseractWorker = null;
+ui.ocrBtn.addEventListener('click', runOCR);
+ui.ocrClose.addEventListener('click', () => ui.ocrPanel.classList.remove('show'));
+ui.ocrCopy.addEventListener('click', () => {
+  navigator.clipboard.writeText(ui.ocrResult.value);
+  showStatus('Текст скопирован');
+});
+ui.ocrDownload.addEventListener('click', () => {
+  const blob = new Blob([ui.ocrResult.value], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = state.fileName.replace(/\.pdf$/i, '') + `-стр${state.currentPage}.txt`;
+  a.click();
+});
+
+async function runOCR() {
+  if (!state.pdfDoc) return;
+  ui.ocrPanel.classList.add('show');
+  ui.ocrResult.value = '';
+  ui.ocrProgress.textContent = 'Загружаю модель распознавания (один раз, ~10-20 МБ)...';
+
+  try {
+    if (!tesseractWorker) {
+      // dynamic import
+      const Tesseract = (await import('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/+esm')).default;
+      tesseractWorker = await Tesseract.createWorker(['rus', 'eng'], 1, {
+        logger: m => {
+          if (m.status && m.progress != null) {
+            ui.ocrProgress.textContent = `${m.status}: ${Math.round(m.progress * 100)}%`;
+          }
+        },
+      });
+    }
+    // Render current page to higher-res canvas for better OCR
+    const page = await state.pdfDoc.getPage(state.currentPage);
+    const vp = page.getViewport({ scale: 2.5 });
+    const off = document.createElement('canvas');
+    off.width = vp.width; off.height = vp.height;
+    await page.render({ canvasContext: off.getContext('2d'), viewport: vp }).promise;
+    ui.ocrProgress.textContent = 'Распознавание...';
+    const { data } = await tesseractWorker.recognize(off);
+    ui.ocrResult.value = data.text;
+    ui.ocrProgress.textContent = `Готово. Уверенность: ${Math.round(data.confidence)}%`;
+  } catch (err) {
+    console.error(err);
+    ui.ocrProgress.textContent = 'Ошибка: ' + err.message;
+  }
+}
+
+// ---------- Download with annotations ----------
+ui.downloadBtn.addEventListener('click', exportPDF);
+
+async function exportPDF() {
+  if (!state.pdfBytes) return;
+  showStatus('Сохраняю PDF...', 'info', 0);
+  try {
+    const pdfDoc = await PDFDocument.load(state.pdfBytes);
+    const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const pages = pdfDoc.getPages();
+
+    for (let i = 0; i < pages.length; i++) {
+      const pageNum = i + 1;
+      const list = state.annotations[pageNum];
+      if (!list || !list.length) continue;
+      const page = pages[i];
+      const { width: pw, height: ph } = page.getSize();
+      // Our annotation canvas is rendered at scale = state.scale (default 1.5)
+      // pdf-lib uses points (1 pt = 1/72 inch), pdf.js viewport at scale=1 == pt
+      // So pixel-to-pt factor = 1/state.scale
+      const k = 1 / state.scale;
+      // pdf-lib coordinate origin = bottom-left; canvas = top-left → flip Y
+      for (const a of list) {
+        if (a.type === 'highlight') {
+          const c = hexToRgb(a.color);
+          page.drawRectangle({
+            x: a.x * k,
+            y: ph - (a.y + a.h) * k,
+            width: a.w * k,
+            height: a.h * k,
+            color: rgb(c.r, c.g, c.b),
+            opacity: 0.4,
+          });
+        } else if (a.type === 'draw') {
+          const c = hexToRgb(a.color);
+          for (let j = 1; j < a.points.length; j++) {
+            const p1 = a.points[j - 1], p2 = a.points[j];
+            page.drawLine({
+              start: { x: p1.x * k, y: ph - p1.y * k },
+              end:   { x: p2.x * k, y: ph - p2.y * k },
+              thickness: 1.5,
+              color: rgb(c.r, c.g, c.b),
+            });
+          }
+        } else if (a.type === 'text') {
+          const c = hexToRgb(a.color);
+          const size = (a.size || 14) * k;
+          const lines = a.text.split('\n');
+          let y = ph - a.y * k - size;
+          for (const line of lines) {
+            // pdf-lib's standard fonts don't support Cyrillic. Fallback: draw as bytes anyway,
+            // non-ASCII glyphs become "?". For Cyrillic we'd need a TTF font; future iteration.
+            const safe = line.replace(/[^\x20-\x7E]/g, '?');
+            page.drawText(safe, { x: a.x * k, y, size, font: helvetica, color: rgb(c.r, c.g, c.b) });
+            y -= size * 1.2;
+          }
+        }
+      }
+    }
+    const out = await pdfDoc.save();
+    const blob = new Blob([out], { type: 'application/pdf' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = state.fileName.replace(/\.pdf$/i, '') + '-отредактированный.pdf';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    showStatus('PDF сохранён');
+  } catch (err) {
+    console.error(err);
+    showStatus('Ошибка сохранения: ' + err.message, 'error', 5000);
+  }
+}
+
+function hexToRgb(hex) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  return { r, g, b };
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (!state.pdfDoc) return;
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+  if (e.key === 'ArrowLeft') { ui.prevBtn.click(); }
+  if (e.key === 'ArrowRight') { ui.nextBtn.click(); }
+  if (e.key === '+' || e.key === '=') { ui.zoomIn.click(); }
+  if (e.key === '-') { ui.zoomOut.click(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); ui.undoBtn.click(); }
+});
+
+showStatus('Готов к работе. Перетащите PDF, чтобы начать.', 'info', 4000);
+</script>
+
+</body>
+</html>
