@@ -30,8 +30,12 @@
 
 - На Mac у пользователя — локальный Claude Code + личный Obsidian-vault (туда я не имею доступа).
 - В облаке (текущая среда) — мой «vault» в этом репо `skyworkerq-hash/gh`, папка `claude-vault/`.
-- Ветка для разработки: `claude/ai-capabilities-overview-vWBGX`.
+- Основная ветка для работы: **`main`** (создана 2026-05-15, содержит всю накопленную работу).
+- Историческая ветка `claude/ai-capabilities-overview-vWBGX` синхронизирована с main.
+- Default branch на GitHub: на момент написания всё ещё `claude/ai-capabilities-overview-vWBGX` — пользователь должен переключить вручную в Settings → Branches.
+- Network access у Environment Default — **Full** (любые внешние API доступны).
 - Репо должно быть **приватным** (пользователь подтвердил требование).
+- **Быстрая команда восстановления контекста: `/м` или `/память`** — описана в `.claude/commands/`.
 
 ## Установленные community-скилы (через SessionStart-хук)
 
