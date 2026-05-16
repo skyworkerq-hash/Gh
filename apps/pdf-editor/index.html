@@ -124,24 +124,57 @@
   .status.show { opacity: 1; transform: translateY(0); }
   .status.error { background: var(--danger); }
 
-  /* OCR result panel */
-  #ocr-panel {
-    width: 320px; background: var(--panel); border-left: 1px solid var(--border);
-    display: none; flex-direction: column; padding: 12px;
+  /* Side panels (OCR / AI) */
+  #ocr-panel, #ai-panel {
+    width: 360px; background: var(--panel); border-left: 1px solid var(--border);
+    display: none; flex-direction: column; padding: 12px; overflow-y: auto;
   }
-  #ocr-panel.show { display: flex; }
-  #ocr-panel .ocr-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  #ocr-panel h3 { margin: 0; font-size: 14px; flex: 1; }
+  #ocr-panel.show, #ai-panel.show { display: flex; }
+  #ocr-panel .ocr-header, #ai-panel .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  #ocr-panel h3, #ai-panel h3 { margin: 0; font-size: 14px; flex: 1; }
   #ocr-panel textarea {
     flex: 1; border: 1px solid var(--border); border-radius: 6px;
     padding: 10px; font-size: 13px; resize: none; font-family: inherit;
     min-height: 200px;
   }
-  #ocr-panel .ocr-actions { display: flex; gap: 8px; margin-top: 10px; }
-  #ocr-panel .progress { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  #ocr-panel .ocr-actions, #ai-panel .ai-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  #ocr-panel .progress, #ai-panel .progress { font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 16px; }
+
+  /* AI panel */
+  #ai-panel .ai-hint { font-size: 12px; color: var(--muted); margin: 0 0 10px; line-height: 1.4; }
+  #ai-panel table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
+  #ai-panel table th, #ai-panel table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  #ai-panel table th { color: var(--muted); font-weight: 500; width: 38%; font-size: 12px; }
+  #ai-panel table td { word-break: break-word; }
+  #ai-panel .group-title { font-weight: 600; font-size: 13px; margin: 14px 0 4px; color: var(--accent); }
+  #ai-panel pre.raw { font-size: 11px; white-space: pre-wrap; background: #fafafa; padding: 8px; border-radius: 4px; max-height: 200px; overflow: auto; border: 1px solid var(--border); }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    display: none; align-items: center; justify-content: center; z-index: 100;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--panel); border-radius: 10px; padding: 20px;
+    width: 420px; max-width: calc(100vw - 32px);
+    box-shadow: 0 20px 50px rgba(0,0,0,.3);
+  }
+  .modal h2 { margin: 0 0 12px; font-size: 16px; }
+  .modal label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .modal input[type="text"], .modal input[type="password"], .modal select {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 13px; font-family: inherit;
+    margin-bottom: 12px;
+  }
+  .modal .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+  .modal .modal-info { font-size: 12px; color: var(--muted); margin: 0 0 12px; line-height: 1.4; }
+  .modal .key-row { display: flex; gap: 6px; align-items: center; margin-bottom: 12px; }
+  .modal .key-row input { margin-bottom: 0; flex: 1; }
 
   @media (max-width: 800px) {
     aside { display: none; }
+    #ocr-panel, #ai-panel { width: 100%; }
   }
 </style>
 </head>
@@ -151,6 +184,7 @@
   <h1>PDF-редактор</h1>
   <span class="filename" id="filename"></span>
   <div class="spacer"></div>
+  <button id="settings-btn" title="Настройки AI">⚙ AI-ключ</button>
   <label class="btn" for="file-input">Открыть PDF</label>
   <input type="file" id="file-input" accept="application/pdf">
   <button id="download-btn" class="primary" disabled>Скачать</button>
@@ -185,6 +219,7 @@
       <button id="clear-page-btn" title="Очистить аннотации страницы">Очистить</button>
       <div class="sep"></div>
       <button id="ocr-btn" title="Распознать текст на странице">🔍 OCR</button>
+      <button id="ai-btn" title="Извлечь реквизиты через AI">🤖 AI-реквизиты</button>
     </div>
 
     <div class="canvas-area" id="canvas-area">
@@ -214,7 +249,48 @@
       <button id="ocr-download">Скачать .txt</button>
     </div>
   </div>
+
+  <div id="ai-panel">
+    <div class="ai-header">
+      <h3>🤖 Извлечение реквизитов</h3>
+      <button id="ai-close" title="Закрыть">×</button>
+    </div>
+    <p class="ai-hint">
+      Извлеку из договора: стороны (ИНН, КПП, ОГРН, адрес), номер и дату договора, сумму, предмет, срок, тип банковской гарантии. Использует DeepSeek API.
+    </p>
+    <div class="ai-actions">
+      <button id="ai-run" class="primary">Извлечь реквизиты</button>
+      <button id="ai-copy-tsv" disabled>Копировать для Excel</button>
+      <button id="ai-copy-json" disabled>Копировать JSON</button>
+    </div>
+    <div class="progress" id="ai-progress"></div>
+    <div id="ai-result"></div>
+  </div>
 </main>
+
+<div class="modal-backdrop" id="settings-modal">
+  <div class="modal">
+    <h2>Ключ DeepSeek API</h2>
+    <p class="modal-info">
+      Ключ сохраняется только в вашем браузере (localStorage). Получить ключ: <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">platform.deepseek.com</a>.
+    </p>
+    <label for="api-key-input">API-ключ</label>
+    <div class="key-row">
+      <input type="password" id="api-key-input" placeholder="sk-..." autocomplete="off">
+      <button id="toggle-key-visibility" title="Показать/скрыть">👁</button>
+    </div>
+    <label for="model-select">Модель</label>
+    <select id="model-select">
+      <option value="deepseek-chat">deepseek-chat (быстрая, дешёвая)</option>
+      <option value="deepseek-reasoner">deepseek-reasoner (точная, для сложных)</option>
+    </select>
+    <div class="modal-actions">
+      <button id="settings-clear">Удалить ключ</button>
+      <button id="settings-cancel">Отмена</button>
+      <button id="settings-save" class="primary">Сохранить</button>
+    </div>
+  </div>
+</div>
 
 <div class="status" id="status"></div>
 
@@ -244,6 +320,7 @@ const ui = {
   fileInput: $('file-input'),
   filename: $('filename'),
   downloadBtn: $('download-btn'),
+  settingsBtn: $('settings-btn'),
   thumbsPanel: $('thumbs-panel'),
   thumbs: $('thumbs'),
   toolbar: $('toolbar'),
@@ -270,6 +347,23 @@ const ui = {
   ocrProgress: $('ocr-progress'),
   ocrCopy: $('ocr-copy'),
   ocrDownload: $('ocr-download'),
+  // AI
+  aiBtn: $('ai-btn'),
+  aiPanel: $('ai-panel'),
+  aiClose: $('ai-close'),
+  aiRun: $('ai-run'),
+  aiResult: $('ai-result'),
+  aiProgress: $('ai-progress'),
+  aiCopyTsv: $('ai-copy-tsv'),
+  aiCopyJson: $('ai-copy-json'),
+  // Settings modal
+  settingsModal: $('settings-modal'),
+  apiKeyInput: $('api-key-input'),
+  toggleKeyVisibility: $('toggle-key-visibility'),
+  modelSelect: $('model-select'),
+  settingsSave: $('settings-save'),
+  settingsCancel: $('settings-cancel'),
+  settingsClear: $('settings-clear'),
   status: $('status'),
 };
 
@@ -696,6 +790,280 @@ document.addEventListener('keydown', e => {
   if (e.key === '-') { ui.zoomOut.click(); }
   if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); ui.undoBtn.click(); }
 });
+
+// ---------- Settings modal (DeepSeek key) ----------
+const LS_KEY = 'pdfeditor.deepseek.apiKey';
+const LS_MODEL = 'pdfeditor.deepseek.model';
+
+function loadSettings() {
+  return {
+    apiKey: localStorage.getItem(LS_KEY) || '',
+    model: localStorage.getItem(LS_MODEL) || 'deepseek-chat',
+  };
+}
+function saveSettings(apiKey, model) {
+  if (apiKey) localStorage.setItem(LS_KEY, apiKey); else localStorage.removeItem(LS_KEY);
+  localStorage.setItem(LS_MODEL, model || 'deepseek-chat');
+}
+function openSettings() {
+  const s = loadSettings();
+  ui.apiKeyInput.value = s.apiKey;
+  ui.apiKeyInput.type = 'password';
+  ui.modelSelect.value = s.model;
+  ui.settingsModal.classList.add('show');
+}
+function closeSettings() { ui.settingsModal.classList.remove('show'); }
+
+ui.settingsBtn.addEventListener('click', openSettings);
+ui.settingsCancel.addEventListener('click', closeSettings);
+ui.settingsModal.addEventListener('click', e => { if (e.target === ui.settingsModal) closeSettings(); });
+ui.settingsSave.addEventListener('click', () => {
+  const k = ui.apiKeyInput.value.trim();
+  saveSettings(k, ui.modelSelect.value);
+  closeSettings();
+  showStatus(k ? 'Ключ сохранён' : 'Ключ очищен');
+});
+ui.settingsClear.addEventListener('click', () => {
+  ui.apiKeyInput.value = '';
+  saveSettings('', ui.modelSelect.value);
+  closeSettings();
+  showStatus('Ключ удалён');
+});
+ui.toggleKeyVisibility.addEventListener('click', () => {
+  ui.apiKeyInput.type = ui.apiKeyInput.type === 'password' ? 'text' : 'password';
+});
+
+// ---------- AI: extract structured fields ----------
+ui.aiBtn.addEventListener('click', () => {
+  ui.aiPanel.classList.add('show');
+});
+ui.aiClose.addEventListener('click', () => ui.aiPanel.classList.remove('show'));
+ui.aiRun.addEventListener('click', runAIExtract);
+
+let lastExtract = null;
+
+ui.aiCopyTsv.addEventListener('click', () => {
+  if (!lastExtract) return;
+  const tsv = toTSV(lastExtract);
+  navigator.clipboard.writeText(tsv);
+  showStatus('Скопировано — вставьте в Excel/Sheets');
+});
+ui.aiCopyJson.addEventListener('click', () => {
+  if (!lastExtract) return;
+  navigator.clipboard.writeText(JSON.stringify(lastExtract, null, 2));
+  showStatus('JSON скопирован');
+});
+
+async function extractAllText() {
+  // Try text layer first, full document
+  const parts = [];
+  let totalChars = 0;
+  for (let i = 1; i <= state.totalPages; i++) {
+    ui.aiProgress.textContent = `Извлекаю текст: страница ${i}/${state.totalPages}`;
+    const page = await state.pdfDoc.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items.map(it => it.str).join(' ');
+    parts.push(pageText);
+    totalChars += pageText.length;
+  }
+  if (totalChars > 200) return { text: parts.join('\n\n'), source: 'text-layer' };
+
+  // Fallback: OCR every page (slow)
+  if (!confirm(`PDF без текстового слоя (только ${totalChars} символов). Прогнать все ${state.totalPages} страниц через OCR? Это займёт ${state.totalPages * 10}-${state.totalPages * 30} секунд.`)) {
+    throw new Error('Извлечение отменено');
+  }
+  if (!tesseractWorker) {
+    ui.aiProgress.textContent = 'Загружаю модель OCR (один раз, ~15 МБ)...';
+    const Tesseract = (await import('https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/+esm')).default;
+    tesseractWorker = await Tesseract.createWorker(['rus', 'eng'], 1);
+  }
+  const ocrParts = [];
+  for (let i = 1; i <= state.totalPages; i++) {
+    ui.aiProgress.textContent = `OCR: страница ${i}/${state.totalPages}`;
+    const page = await state.pdfDoc.getPage(i);
+    const vp = page.getViewport({ scale: 2.5 });
+    const off = document.createElement('canvas');
+    off.width = vp.width; off.height = vp.height;
+    await page.render({ canvasContext: off.getContext('2d'), viewport: vp }).promise;
+    const { data } = await tesseractWorker.recognize(off);
+    ocrParts.push(data.text);
+  }
+  return { text: ocrParts.join('\n\n'), source: 'ocr' };
+}
+
+async function runAIExtract() {
+  if (!state.pdfDoc) { showStatus('Сначала откройте PDF', 'error'); return; }
+  const s = loadSettings();
+  if (!s.apiKey) {
+    showStatus('Сначала добавьте API-ключ (кнопка ⚙ AI-ключ)', 'error', 4000);
+    openSettings();
+    return;
+  }
+
+  ui.aiRun.disabled = true;
+  ui.aiCopyTsv.disabled = true;
+  ui.aiCopyJson.disabled = true;
+  ui.aiResult.innerHTML = '';
+  ui.aiProgress.textContent = 'Готовлю...';
+
+  try {
+    const { text, source } = await extractAllText();
+    ui.aiProgress.textContent = `Текст (${source === 'ocr' ? 'OCR' : 'из слоя'}, ${text.length} симв.) — отправляю в DeepSeek...`;
+
+    // DeepSeek has 128K context for deepseek-chat. Trim if huge.
+    const MAX = 60000;
+    const clipped = text.length > MAX
+      ? text.slice(0, MAX / 2) + '\n\n[...пропущено...]\n\n' + text.slice(-MAX / 2)
+      : text;
+
+    const data = await callDeepSeek(s.apiKey, s.model, clipped);
+    lastExtract = data;
+    renderExtract(data);
+    ui.aiProgress.textContent = `Готово. Источник: ${source === 'ocr' ? 'OCR' : 'текстовый слой'}.`;
+    ui.aiCopyTsv.disabled = false;
+    ui.aiCopyJson.disabled = false;
+  } catch (err) {
+    console.error(err);
+    ui.aiProgress.textContent = '';
+    ui.aiResult.innerHTML = `<div style="color: var(--danger); font-size: 13px; padding: 10px; background: #fef2f2; border-radius: 6px; margin-top: 10px;">
+      <b>Ошибка:</b> ${escapeHtml(err.message)}
+    </div>`;
+  } finally {
+    ui.aiRun.disabled = false;
+  }
+}
+
+async function callDeepSeek(apiKey, model, text) {
+  const systemPrompt = `Ты помощник по извлечению реквизитов из договоров для агента по банковским гарантиям (44-ФЗ/223-ФЗ).
+Извлеки строго в JSON. Если поле отсутствует — null. Не выдумывай. Числа без пробелов и валюты.
+
+Схема ответа:
+{
+  "номер_договора": string|null,
+  "дата_договора": string|null,    // в формате DD.MM.YYYY
+  "предмет": string|null,
+  "сумма": number|null,             // в рублях
+  "валюта": string|null,            // RUB по умолчанию
+  "номер_закупки": string|null,    // ИКЗ или реестровый номер если есть
+  "44_или_223_фз": string|null,
+  "срок_исполнения": string|null,
+  "место_исполнения": string|null,
+  "заказчик": {
+    "наименование": string|null, "инн": string|null, "кпп": string|null,
+    "огрн": string|null, "адрес": string|null
+  },
+  "поставщик": {
+    "наименование": string|null, "инн": string|null, "кпп": string|null,
+    "огрн": string|null, "адрес": string|null
+  },
+  "банковская_гарантия": {
+    "требуется": boolean|null, "тип": string|null,
+    "размер_процент": number|null, "размер_сумма": number|null,
+    "срок": string|null
+  }
+}`;
+
+  const res = await fetch('https://api.deepseek.com/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + apiKey,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: 'Текст договора:\n\n' + text },
+      ],
+      response_format: { type: 'json_object' },
+      temperature: 0.1,
+    }),
+  });
+
+  if (!res.ok) {
+    let detail = '';
+    try { detail = JSON.stringify(await res.json()); } catch {}
+    if (res.status === 401) throw new Error('Неверный API-ключ DeepSeek (401). Проверьте в настройках.');
+    if (res.status === 402) throw new Error('Недостаточно средств на балансе DeepSeek (402).');
+    if (res.status === 429) throw new Error('Лимит запросов исчерпан (429). Подождите и попробуйте снова.');
+    throw new Error(`Ошибка DeepSeek API ${res.status}: ${detail.slice(0, 200)}`);
+  }
+  const json = await res.json();
+  const content = json.choices?.[0]?.message?.content;
+  if (!content) throw new Error('Пустой ответ от модели');
+  try {
+    return JSON.parse(content);
+  } catch (e) {
+    // try to find JSON in content
+    const m = content.match(/\{[\s\S]*\}/);
+    if (m) return JSON.parse(m[0]);
+    throw new Error('Модель вернула не-JSON: ' + content.slice(0, 200));
+  }
+}
+
+function renderExtract(d) {
+  const fmt = v => (v === null || v === undefined || v === '') ? '<span style="color: var(--muted);">—</span>' : escapeHtml(String(v));
+  const money = v => v == null ? '—' : new Intl.NumberFormat('ru-RU').format(v) + ' ₽';
+  const partyRows = (party) => {
+    if (!party) party = {};
+    return `
+      <tr><th>Наименование</th><td>${fmt(party.наименование)}</td></tr>
+      <tr><th>ИНН</th><td>${fmt(party.инн)}</td></tr>
+      <tr><th>КПП</th><td>${fmt(party.кпп)}</td></tr>
+      <tr><th>ОГРН</th><td>${fmt(party.огрн)}</td></tr>
+      <tr><th>Адрес</th><td>${fmt(party.адрес)}</td></tr>
+    `;
+  };
+  const bg = d.банковская_гарантия || {};
+  ui.aiResult.innerHTML = `
+    <div class="group-title">Договор</div>
+    <table>
+      <tr><th>Номер</th><td>${fmt(d.номер_договора)}</td></tr>
+      <tr><th>Дата</th><td>${fmt(d.дата_договора)}</td></tr>
+      <tr><th>Предмет</th><td>${fmt(d.предмет)}</td></tr>
+      <tr><th>Сумма</th><td>${d.сумма != null ? escapeHtml(money(d.сумма)) : '—'}</td></tr>
+      <tr><th>Закупка / ИКЗ</th><td>${fmt(d.номер_закупки)}</td></tr>
+      <tr><th>ФЗ</th><td>${fmt(d['44_или_223_фз'])}</td></tr>
+      <tr><th>Срок</th><td>${fmt(d.срок_исполнения)}</td></tr>
+      <tr><th>Место</th><td>${fmt(d.место_исполнения)}</td></tr>
+    </table>
+    <div class="group-title">Заказчик</div>
+    <table>${partyRows(d.заказчик)}</table>
+    <div class="group-title">Поставщик</div>
+    <table>${partyRows(d.поставщик)}</table>
+    <div class="group-title">Банковская гарантия</div>
+    <table>
+      <tr><th>Требуется</th><td>${bg.требуется == null ? '—' : (bg.требуется ? 'Да' : 'Нет')}</td></tr>
+      <tr><th>Тип</th><td>${fmt(bg.тип)}</td></tr>
+      <tr><th>Размер, %</th><td>${fmt(bg.размер_процент)}</td></tr>
+      <tr><th>Размер, ₽</th><td>${bg.размер_сумма != null ? escapeHtml(money(bg.размер_сумма)) : '—'}</td></tr>
+      <tr><th>Срок</th><td>${fmt(bg.срок)}</td></tr>
+    </table>
+  `;
+}
+
+function toTSV(d) {
+  // Single-row flat TSV with header — удобно вставлять как строку в Excel
+  const p = (party) => party || {};
+  const z = p(d.заказчик), s = p(d.поставщик), bg = p(d.банковская_гарантия);
+  const headers = [
+    'Номер договора', 'Дата', 'Предмет', 'Сумма', 'ФЗ', 'Закупка', 'Срок', 'Место',
+    'Заказчик: наименование', 'Заказчик: ИНН', 'Заказчик: КПП', 'Заказчик: ОГРН', 'Заказчик: адрес',
+    'Поставщик: наименование', 'Поставщик: ИНН', 'Поставщик: КПП', 'Поставщик: ОГРН', 'Поставщик: адрес',
+    'БГ требуется', 'БГ тип', 'БГ %', 'БГ сумма', 'БГ срок',
+  ];
+  const values = [
+    d.номер_договора, d.дата_договора, d.предмет, d.сумма, d['44_или_223_фз'], d.номер_закупки, d.срок_исполнения, d.место_исполнения,
+    z.наименование, z.инн, z.кпп, z.огрн, z.адрес,
+    s.наименование, s.инн, s.кпп, s.огрн, s.адрес,
+    bg.требуется, bg.тип, bg.размер_процент, bg.размер_сумма, bg.срок,
+  ].map(v => v == null ? '' : String(v).replace(/\t/g, ' ').replace(/\n/g, ' '));
+  return headers.join('\t') + '\n' + values.join('\t');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
 showStatus('Готов к работе. Перетащите PDF, чтобы начать.', 'info', 4000);
 </script>
