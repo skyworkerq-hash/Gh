@@ -1,7 +1,9 @@
 # Никогда не коммитим секреты — только README с описанием схемы
+# Исключение: test-credentials.json — тестовые ключи в приватном репо, переживают сессии
 claude-vault/secrets/*
 !claude-vault/secrets/README.md
 !claude-vault/secrets/.gitkeep
+!claude-vault/secrets/test-credentials.json
 
 # Окружение
 .env
