@@ -48,6 +48,29 @@
 - Коммитить и пушить — иначе пропадёт.
 - В **начале сессии** читать `claude-vault/CLAUDE.md` → `knowledge/context.md` → `knowledge/preferences.md` → последний `journal/` → актуальные проекты.
 
+### ⚠️ Куда пушить память
+
+**Память — всегда в `main`. Никогда на feature-ветке.**
+
+Даже если текущая рабочая сессия идёт на feature-ветке (`claude/...`), команда «обнови память» обновляет `claude-vault/` и пушит **сразу в `main`**, а не в текущую ветку. Иначе свежие записи не подхватятся при `/м` в новой сессии.
+
+Алгоритм:
+```bash
+# Сохранить текущую ветку
+CURRENT=$(git branch --show-current)
+# Зафиксировать память на main
+git stash push -- claude-vault/   # если есть незакоммиченные правки кода
+git checkout main && git pull origin main
+# ... write/edit файлов памяти ...
+git add claude-vault/ && git commit -m "Память: ..."
+git push origin main
+# Вернуться обратно
+git checkout "$CURRENT"
+git stash pop 2>/dev/null
+```
+
+Правки кода — на feature-ветке. Память — только на `main`. Никогда не смешивать в одном коммите.
+
 ## Приватность
 
 - Репо приватный.
