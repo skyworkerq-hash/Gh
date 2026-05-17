@@ -1,0 +1,450 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 2400" font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif">
+  <rect width="1500" height="2400" fill="#0a0a0a"/>
+
+  <text x="750" y="50" fill="#888" font-size="22" text-anchor="middle" letter-spacing="2">ОФИСНЫЙ AI-ХАБ · ГАЛЕРЕЯ ЭКРАНОВ #2 · 12 СЦЕНАРИЕВ</text>
+  <text x="750" y="78" fill="#555" font-size="13" text-anchor="middle">доставка · музыка · связь · уведомления · бытовое</text>
+
+  <!-- ╔═════════════════════════════ RANGE 1: ДОСТАВКА ═════════════════════════════╗ -->
+  <text x="40" y="140" fill="#f4b942" font-size="14" letter-spacing="3">▸ ДОСТАВКА</text>
+
+  <!-- 1. КУРЬЕР НА КАРТЕ -->
+  <g transform="translate(80,170)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Курьер едет</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">из Яндекс.Еды</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- Map background (subtle grid) -->
+    <defs>
+      <pattern id="grid1" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#181818" stroke-width="0.5"/>
+      </pattern>
+      <clipPath id="circleClip1"><circle cx="180" cy="200" r="178"/></clipPath>
+    </defs>
+    <rect x="0" y="20" width="360" height="360" fill="url(#grid1)" clip-path="url(#circleClip1)"/>
+
+    <!-- Streets -->
+    <g clip-path="url(#circleClip1)" stroke="#2a2a2a" stroke-width="2" fill="none">
+      <path d="M 30 150 L 330 200"/>
+      <path d="M 80 50 L 200 350"/>
+      <path d="M 240 30 L 130 370"/>
+    </g>
+
+    <!-- Route -->
+    <path d="M 100 280 Q 150 230 200 200 T 260 130" stroke="#f4b942" stroke-width="3" fill="none" stroke-dasharray="6 3"/>
+
+    <!-- Restaurant (start) -->
+    <circle cx="260" cy="130" r="8" fill="#7ad77a"/>
+    <text x="276" y="135" fill="#7ad77a" font-size="11">ресторан</text>
+
+    <!-- Courier (current) -->
+    <circle cx="170" cy="220" r="12" fill="#f4b942" stroke="#000" stroke-width="3"/>
+    <text x="170" y="225" fill="#000" font-size="14" text-anchor="middle">🛵</text>
+
+    <!-- Destination (you) -->
+    <circle cx="100" cy="280" r="10" fill="#3aa9ff"/>
+    <text x="100" y="284" fill="#fff" font-size="11" text-anchor="middle">●</text>
+    <text x="115" y="296" fill="#3aa9ff" font-size="11">офис</text>
+
+    <!-- Bottom info -->
+    <rect x="60" y="320" width="240" height="50" rx="25" fill="#000" stroke="#1a1a1a" stroke-width="1"/>
+    <text x="180" y="343" fill="#f4b942" font-size="22" font-weight="200" text-anchor="middle">12 минут</text>
+    <text x="180" y="362" fill="#666" font-size="11" text-anchor="middle">Магомед · +7 ••• 47</text>
+  </g>
+
+  <!-- 2. СОСТАВ ЗАКАЗА -->
+  <g transform="translate(490,170)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Состав заказа</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">«покажи что заказал»</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- Restaurant -->
+    <text x="180" y="85" fill="#666" font-size="11" text-anchor="middle">🍽 Пельменная на Тверской</text>
+
+    <!-- Items -->
+    <text x="180" y="125" fill="#ffffff" font-size="16" font-weight="500" text-anchor="middle">Заказ #4821</text>
+
+    <line x1="60" y1="145" x2="300" y2="145" stroke="#222" stroke-width="1"/>
+
+    <text x="70" y="170" fill="#ddd" font-size="13">Борщ с говядиной</text>
+    <text x="290" y="170" fill="#888" font-size="13" text-anchor="end">×1</text>
+
+    <text x="70" y="195" fill="#ddd" font-size="13">Пельмени домашние</text>
+    <text x="290" y="195" fill="#888" font-size="13" text-anchor="end">×2</text>
+
+    <text x="70" y="220" fill="#ddd" font-size="13">Хлеб ржаной</text>
+    <text x="290" y="220" fill="#888" font-size="13" text-anchor="end">×1</text>
+
+    <text x="70" y="245" fill="#ddd" font-size="13">Морс клюквенный</text>
+    <text x="290" y="245" fill="#888" font-size="13" text-anchor="end">×1</text>
+
+    <line x1="60" y1="270" x2="300" y2="270" stroke="#222" stroke-width="1"/>
+
+    <text x="70" y="295" fill="#666" font-size="12">Итого</text>
+    <text x="290" y="295" fill="#f4b942" font-size="18" font-weight="500" text-anchor="end">1 240 ₽</text>
+
+    <text x="180" y="335" fill="#666" font-size="11" text-anchor="middle">оплата с карты ••• 4321</text>
+    <text x="180" y="358" fill="#7ad77a" font-size="11" text-anchor="middle">✓ заказ подтверждён</text>
+  </g>
+
+  <!-- 3. ДОСТАВЛЕНО -->
+  <g transform="translate(900,170)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Курьер на проходной</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">алерт по факту</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- Big check -->
+    <circle cx="180" cy="170" r="50" fill="none" stroke="#7ad77a" stroke-width="3"/>
+    <path d="M 158 170 L 175 187 L 205 155" stroke="#7ad77a" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+    <text x="180" y="255" fill="#ffffff" font-size="22" font-weight="500" text-anchor="middle">Курьер у входа</text>
+
+    <text x="180" y="285" fill="#aaa" font-size="13" text-anchor="middle">Магомед звонит</text>
+
+    <!-- Action buttons -->
+    <rect x="80" y="310" width="90" height="40" rx="20" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+    <text x="125" y="335" fill="#fff" font-size="12" text-anchor="middle">не я</text>
+
+    <rect x="190" y="310" width="90" height="40" rx="20" fill="#f4b942"/>
+    <text x="235" y="335" fill="#000" font-size="12" text-anchor="middle" font-weight="600">встречу</text>
+  </g>
+
+
+  <!-- ╔═════════════════════════════ RANGE 2: МУЗЫКА И СВЯЗЬ ═════════════════════════════╗ -->
+  <text x="40" y="640" fill="#f4b942" font-size="14" letter-spacing="3">▸ МУЗЫКА И СВЯЗЬ</text>
+
+  <!-- 4. МУЗЫКА ПЛЕЕР -->
+  <g transform="translate(80,670)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Музыка</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">Yandex.Музыка / Spotify</text>
+
+    <!-- Outer progress ring -->
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+    <circle cx="180" cy="200" r="170" fill="none" stroke="#222" stroke-width="3"/>
+    <!-- progress arc, ~42% -->
+    <circle cx="180" cy="200" r="170" fill="none" stroke="#f4b942" stroke-width="3"
+            stroke-dasharray="448 1068" stroke-linecap="round"
+            transform="rotate(-90 180 200)"/>
+
+    <!-- Album art -->
+    <defs>
+      <linearGradient id="album1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#6d4ba8"/>
+        <stop offset="100%" stop-color="#e09020"/>
+      </linearGradient>
+    </defs>
+    <circle cx="180" cy="180" r="80" fill="url(#album1)"/>
+    <circle cx="180" cy="180" r="10" fill="#0a0a0a"/>
+
+    <!-- Track info -->
+    <text x="180" y="298" fill="#ffffff" font-size="15" font-weight="500" text-anchor="middle">Lo-fi for focus</text>
+    <text x="180" y="318" fill="#888" font-size="12" text-anchor="middle">Chillhop Records</text>
+
+    <!-- Time -->
+    <text x="180" y="345" fill="#666" font-size="11" text-anchor="middle">1:23  /  3:14</text>
+
+    <!-- Controls -->
+    <g transform="translate(180, 370)" fill="#888">
+      <path d="M -40 -6 L -40 6 L -50 0 Z M -28 -8 L -28 8" stroke="#888" stroke-width="2" fill="none"/>
+      <circle cx="0" cy="0" r="8" fill="#f4b942"/>
+      <rect x="-3" y="-4" width="2" height="8" fill="#000"/>
+      <rect x="1" y="-4" width="2" height="8" fill="#000"/>
+      <path d="M 40 -6 L 40 6 L 50 0 Z M 28 -8 L 28 8" stroke="#888" stroke-width="2" fill="none"/>
+    </g>
+  </g>
+
+  <!-- 5. ВХОДЯЩИЙ ЗВОНОК -->
+  <g transform="translate(490,670)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Входящий звонок</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">распознал клиента по номеру</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- Pulsing rings -->
+    <circle cx="180" cy="200" r="178" fill="none" stroke="#7ad77a" stroke-width="2" opacity="0.7"/>
+    <circle cx="180" cy="200" r="162" fill="none" stroke="#7ad77a" stroke-width="2" opacity="0.35"/>
+
+    <!-- Avatar -->
+    <circle cx="180" cy="150" r="38" fill="#1f3a2a"/>
+    <text x="180" y="160" fill="#7ad77a" font-size="28" text-anchor="middle" font-weight="600">П</text>
+
+    <!-- Name -->
+    <text x="180" y="220" fill="#ffffff" font-size="18" font-weight="500" text-anchor="middle">Петров Сергей</text>
+    <text x="180" y="240" fill="#888" font-size="12" text-anchor="middle">ООО Альфа-Строй</text>
+
+    <text x="180" y="265" fill="#666" font-size="11" text-anchor="middle">последний раз: 03 мая · 22 мин</text>
+
+    <!-- Buttons -->
+    <circle cx="115" cy="335" r="28" fill="#e74c3c"/>
+    <text x="115" y="343" fill="#fff" font-size="18" text-anchor="middle">✕</text>
+
+    <circle cx="245" cy="335" r="28" fill="#7ad77a"/>
+    <text x="245" y="343" fill="#000" font-size="18" text-anchor="middle">📞</text>
+  </g>
+
+  <!-- 6. ГОЛОСОВОЕ СООБЩЕНИЕ -->
+  <g transform="translate(900,670)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Голосовое от клиента</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">с авто-транскриптом</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <text x="180" y="80" fill="#666" font-size="11" text-anchor="middle">WhatsApp · Иванов Ан.</text>
+
+    <!-- Waveform -->
+    <g transform="translate(180,130)">
+      <rect x="-100" y="-6" width="3" height="12" fill="#444"/>
+      <rect x="-92" y="-12" width="3" height="24" fill="#666"/>
+      <rect x="-84" y="-18" width="3" height="36" fill="#888"/>
+      <rect x="-76" y="-14" width="3" height="28" fill="#f4b942"/>
+      <rect x="-68" y="-22" width="3" height="44" fill="#f4b942"/>
+      <rect x="-60" y="-10" width="3" height="20" fill="#f4b942"/>
+      <rect x="-52" y="-26" width="3" height="52" fill="#f4b942"/>
+      <rect x="-44" y="-16" width="3" height="32" fill="#666"/>
+      <rect x="-36" y="-24" width="3" height="48" fill="#666"/>
+      <rect x="-28" y="-12" width="3" height="24" fill="#666"/>
+      <rect x="-20" y="-20" width="3" height="40" fill="#666"/>
+      <rect x="-12" y="-8" width="3" height="16" fill="#444"/>
+      <rect x="-4" y="-14" width="3" height="28" fill="#444"/>
+      <rect x="4" y="-6" width="3" height="12" fill="#444"/>
+      <rect x="12" y="-18" width="3" height="36" fill="#444"/>
+      <rect x="20" y="-10" width="3" height="20" fill="#444"/>
+      <rect x="28" y="-22" width="3" height="44" fill="#444"/>
+      <rect x="36" y="-14" width="3" height="28" fill="#444"/>
+      <rect x="44" y="-8" width="3" height="16" fill="#444"/>
+      <rect x="52" y="-16" width="3" height="32" fill="#444"/>
+      <rect x="60" y="-6" width="3" height="12" fill="#444"/>
+      <rect x="68" y="-12" width="3" height="24" fill="#444"/>
+      <rect x="76" y="-4" width="3" height="8" fill="#444"/>
+      <rect x="84" y="-10" width="3" height="20" fill="#444"/>
+      <rect x="92" y="-6" width="3" height="12" fill="#444"/>
+    </g>
+
+    <text x="180" y="175" fill="#666" font-size="11" text-anchor="middle">0:18 / 1:12</text>
+
+    <!-- Transcript card -->
+    <rect x="40" y="200" width="280" height="120" rx="12" fill="#111" stroke="#222" stroke-width="1"/>
+    <text x="55" y="225" fill="#666" font-size="10" letter-spacing="2">РАСШИФРОВКА</text>
+    <text x="55" y="250" fill="#ddd" font-size="12">«Андрей, по поводу гарантии</text>
+    <text x="55" y="268" fill="#ddd" font-size="12">для тендера на 7 миллионов —</text>
+    <text x="55" y="286" fill="#ddd" font-size="12">сможем оформить за неделю?</text>
+    <text x="55" y="304" fill="#ddd" font-size="12">Срок до 25-го горит...»</text>
+
+    <text x="180" y="350" fill="#f4b942" font-size="12" text-anchor="middle">скажи «ответить» или «послушать»</text>
+  </g>
+
+
+  <!-- ╔═════════════════════════════ RANGE 3: УВЕДОМЛЕНИЯ ═════════════════════════════╗ -->
+  <text x="40" y="1140" fill="#f4b942" font-size="14" letter-spacing="3">▸ УВЕДОМЛЕНИЯ</text>
+
+  <!-- 7. TELEGRAM -->
+  <g transform="translate(80,1170)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Telegram</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">умная сортировка</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- Tg icon at top -->
+    <circle cx="180" cy="80" r="22" fill="#229ed9"/>
+    <text x="180" y="89" fill="#fff" font-size="22" text-anchor="middle" font-weight="600">✈</text>
+
+    <!-- Counter -->
+    <text x="180" y="135" fill="#ffffff" font-size="34" font-weight="200" text-anchor="middle">7</text>
+    <text x="180" y="158" fill="#666" font-size="11" text-anchor="middle" letter-spacing="2">НОВЫХ СООБЩЕНИЙ</text>
+
+    <line x1="55" y1="180" x2="305" y2="180" stroke="#222" stroke-width="1"/>
+
+    <!-- Important highlighted -->
+    <rect x="50" y="195" width="260" height="50" rx="8" fill="#1a1a1a" stroke="#f4b942" stroke-width="1"/>
+    <text x="65" y="215" fill="#f4b942" font-size="10" letter-spacing="2">ВАЖНОЕ · ИВАНОВ А.</text>
+    <text x="65" y="235" fill="#ddd" font-size="11">«пришли реквизиты до 17:00»</text>
+
+    <!-- Less important -->
+    <text x="65" y="270" fill="#888" font-size="11">👨 Сбер Бизнес · договор готов</text>
+    <text x="65" y="293" fill="#888" font-size="11">👥 Чат «Тендеры» · 4 сообщения</text>
+    <text x="65" y="316" fill="#555" font-size="11">📢 Канал «44-ФЗ» · 1 пост</text>
+
+    <text x="180" y="358" fill="#666" font-size="11" text-anchor="middle">скажи «прочитай Иванова»</text>
+  </g>
+
+  <!-- 8. WHATSAPP -->
+  <g transform="translate(490,1170)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">WhatsApp</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">сообщение с превью</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- WA icon -->
+    <circle cx="180" cy="80" r="22" fill="#25d366"/>
+    <text x="180" y="90" fill="#fff" font-size="20" text-anchor="middle">💬</text>
+
+    <!-- From -->
+    <text x="180" y="135" fill="#ffffff" font-size="16" font-weight="500" text-anchor="middle">Петров Сергей</text>
+    <text x="180" y="155" fill="#666" font-size="11" text-anchor="middle">сейчас</text>
+
+    <!-- Message bubble -->
+    <rect x="45" y="180" width="270" height="120" rx="14" fill="#0d1f14" stroke="#1f3a2a" stroke-width="1"/>
+    <text x="60" y="207" fill="#ddd" font-size="13">Андрей, привет. Получил</text>
+    <text x="60" y="227" fill="#ddd" font-size="13">от Сбера запрос на доп.</text>
+    <text x="60" y="247" fill="#ddd" font-size="13">документы. Скинь пожалуйста</text>
+    <text x="60" y="267" fill="#ddd" font-size="13">список — что им нужно?</text>
+    <text x="295" y="290" fill="#666" font-size="10" text-anchor="end">14:32  ✓✓</text>
+
+    <!-- Quick reply hint -->
+    <rect x="65" y="318" width="230" height="32" rx="16" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+    <text x="180" y="338" fill="#888" font-size="11" text-anchor="middle">скажи «отвечай голосом»</text>
+  </g>
+
+  <!-- 9. EMAIL -->
+  <g transform="translate(900,1170)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Email от банка</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">саммари через DeepSeek</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- Mail icon -->
+    <rect x="160" y="65" width="40" height="28" rx="4" fill="none" stroke="#f4b942" stroke-width="2"/>
+    <path d="M 160 70 L 180 85 L 200 70" stroke="#f4b942" stroke-width="2" fill="none"/>
+
+    <!-- From -->
+    <text x="180" y="125" fill="#666" font-size="10" letter-spacing="2" text-anchor="middle">ВТБ · ОТДЕЛ ГАРАНТИЙ</text>
+    <text x="180" y="148" fill="#ffffff" font-size="14" font-weight="500" text-anchor="middle">Заявка №2024/847</text>
+
+    <line x1="50" y1="170" x2="310" y2="170" stroke="#222" stroke-width="1"/>
+
+    <!-- Summary -->
+    <text x="50" y="195" fill="#f4b942" font-size="10" letter-spacing="2">САММАРИ</text>
+    <text x="50" y="216" fill="#ddd" font-size="12">Банк одобрил заявку.</text>
+    <text x="50" y="235" fill="#ddd" font-size="12">Комиссия 2.8% (210 000 ₽),</text>
+    <text x="50" y="254" fill="#ddd" font-size="12">срок выдачи — 3 рабочих дня.</text>
+    <text x="50" y="273" fill="#ddd" font-size="12">Нужно подписать договор</text>
+    <text x="50" y="292" fill="#ddd" font-size="12">и оплатить до 19.05.</text>
+
+    <rect x="50" y="310" width="260" height="40" rx="20" fill="#f4b94215"/>
+    <text x="180" y="335" fill="#f4b942" font-size="12" text-anchor="middle">📅 напомнить про оплату 19.05</text>
+  </g>
+
+
+  <!-- ╔═════════════════════════════ RANGE 4: БЫТОВОЕ ═════════════════════════════╗ -->
+  <text x="40" y="1640" fill="#f4b942" font-size="14" letter-spacing="3">▸ БЫТОВОЕ</text>
+
+  <!-- 10. ПОГОДА -->
+  <g transform="translate(80,1670)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Погода почасовая</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">«какая будет погода»</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <text x="180" y="90" fill="#666" font-size="11" text-anchor="middle">МОСКВА · СЕЙЧАС</text>
+
+    <!-- Main temp -->
+    <text x="180" y="150" fill="#ffffff" font-size="56" font-weight="200" text-anchor="middle">+18°</text>
+
+    <text x="180" y="178" fill="#aaa" font-size="13" text-anchor="middle">переменная облачность</text>
+
+    <!-- Hourly forecast -->
+    <line x1="50" y1="208" x2="310" y2="208" stroke="#222" stroke-width="1"/>
+
+    <g font-family="-apple-system" text-anchor="middle">
+      <text x="80" y="235" fill="#666" font-size="11">15</text>
+      <text x="80" y="252" fill="#666" font-size="14">☀</text>
+      <text x="80" y="278" fill="#fff" font-size="13">+19</text>
+
+      <text x="130" y="235" fill="#666" font-size="11">16</text>
+      <text x="130" y="252" fill="#666" font-size="14">☀</text>
+      <text x="130" y="278" fill="#fff" font-size="13">+20</text>
+
+      <text x="180" y="235" fill="#666" font-size="11">17</text>
+      <text x="180" y="252" fill="#666" font-size="14">⛅</text>
+      <text x="180" y="278" fill="#fff" font-size="13">+18</text>
+
+      <text x="230" y="235" fill="#666" font-size="11">18</text>
+      <text x="230" y="252" fill="#666" font-size="14">⛅</text>
+      <text x="230" y="278" fill="#fff" font-size="13">+16</text>
+
+      <text x="280" y="235" fill="#666" font-size="11">19</text>
+      <text x="280" y="252" fill="#666" font-size="14">🌧</text>
+      <text x="280" y="278" fill="#3aa9ff" font-size="13">+14</text>
+    </g>
+
+    <!-- Suggestion -->
+    <rect x="50" y="305" width="260" height="48" rx="10" fill="#0d1a2a" stroke="#1f3a52" stroke-width="1"/>
+    <text x="180" y="325" fill="#3aa9ff" font-size="12" text-anchor="middle">в 19:00 пойдёт дождь —</text>
+    <text x="180" y="342" fill="#3aa9ff" font-size="12" text-anchor="middle">возьми зонт на встречу</text>
+  </g>
+
+  <!-- 11. КАЛЕНДАРЬ -->
+  <g transform="translate(490,1670)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Календарь сегодня</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">«что на сегодня»</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <text x="180" y="85" fill="#666" font-size="11" text-anchor="middle">ВТОРНИК · 17 МАЯ</text>
+
+    <!-- Now indicator -->
+    <line x1="50" y1="120" x2="310" y2="120" stroke="#f4b942" stroke-width="1" stroke-dasharray="3 3"/>
+    <circle cx="50" cy="120" r="4" fill="#f4b942"/>
+    <text x="60" y="115" fill="#f4b942" font-size="10">14:32 СЕЙЧАС</text>
+
+    <!-- Past event (dimmed) -->
+    <text x="60" y="155" fill="#444" font-size="11">11:00 ✓ Звонок с Ивановым</text>
+
+    <!-- Next event highlighted -->
+    <rect x="50" y="175" width="260" height="58" rx="10" fill="#1a1a1a" stroke="#f4b942" stroke-width="1"/>
+    <text x="65" y="195" fill="#f4b942" font-size="10" letter-spacing="2">ЧЕРЕЗ 28 МИН</text>
+    <text x="65" y="215" fill="#ffffff" font-size="14" font-weight="500">15:00  Подача в ВТБ — Петров</text>
+    <text x="65" y="230" fill="#888" font-size="11">личный кабинет, доки готовы</text>
+
+    <!-- Later -->
+    <text x="60" y="262" fill="#aaa" font-size="11">17:30  Встреча — кафе у метро</text>
+    <text x="60" y="285" fill="#aaa" font-size="11">19:00  ⌒ напоминание про оплату</text>
+
+    <!-- Tomorrow preview -->
+    <line x1="50" y1="310" x2="310" y2="310" stroke="#222" stroke-width="1"/>
+    <text x="60" y="333" fill="#555" font-size="10">ЗАВТРА</text>
+    <text x="60" y="353" fill="#666" font-size="11">09:30  планёрка · 14:00  Сбер</text>
+  </g>
+
+  <!-- 12. POMODORO / DND -->
+  <g transform="translate(900,1670)">
+    <text x="180" y="-10" fill="#888" font-size="14" text-anchor="middle">Фокус и тишина</text>
+    <text x="180" y="6" fill="#555" font-size="11" text-anchor="middle">«25 минут не беспокой»</text>
+
+    <circle cx="180" cy="200" r="180" fill="#000" stroke="#1a1a1a" stroke-width="2"/>
+
+    <!-- Big progress ring -->
+    <circle cx="180" cy="200" r="150" fill="none" stroke="#222" stroke-width="6"/>
+    <circle cx="180" cy="200" r="150" fill="none" stroke="#e74c3c" stroke-width="6"
+            stroke-dasharray="660 282" stroke-linecap="round"
+            transform="rotate(-90 180 200)"/>
+
+    <!-- DND icon center -->
+    <circle cx="180" cy="155" r="22" fill="none" stroke="#e74c3c" stroke-width="2"/>
+    <line x1="165" y1="155" x2="195" y2="155" stroke="#e74c3c" stroke-width="3"/>
+
+    <!-- Big timer -->
+    <text x="180" y="220" fill="#ffffff" font-size="42" font-weight="200" text-anchor="middle">17:42</text>
+    <text x="180" y="242" fill="#666" font-size="11" text-anchor="middle" letter-spacing="2">ДО КОНЦА ФОКУСА</text>
+
+    <!-- Status -->
+    <text x="180" y="285" fill="#e74c3c" font-size="13" text-anchor="middle" letter-spacing="2">НЕ БЕСПОКОИТЬ</text>
+    <text x="180" y="308" fill="#888" font-size="11" text-anchor="middle">пропущу всё кроме срочного</text>
+
+    <!-- Cancel button -->
+    <rect x="100" y="328" width="160" height="36" rx="18" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+    <text x="180" y="351" fill="#aaa" font-size="12" text-anchor="middle">отмена</text>
+  </g>
+
+  <!-- ===== FOOTER ===== -->
+  <g transform="translate(80, 2200)">
+    <text x="0" y="0" fill="#666" font-size="13">ВИЗУАЛЬНЫЕ ПАТТЕРНЫ:</text>
+    <text x="0" y="22" fill="#aaa" font-size="12">• Прогресс — всегда кольцом по краю экрана (использует круглую форму, не теряет место).</text>
+    <text x="0" y="42" fill="#aaa" font-size="12">• Один заголовок сверху · одна главная сущность в центре · одно действие/подсказка внизу.</text>
+    <text x="0" y="62" fill="#aaa" font-size="12">• Янтарь — «вектор внимания», красный — срочное/блок, зелёный — успех, синий — нейтральная инфа/погода.</text>
+    <text x="0" y="82" fill="#aaa" font-size="12">• «Скажи ...» внизу каждого экрана — намёк, какую голосовую команду он сейчас ждёт.</text>
+    <text x="0" y="102" fill="#aaa" font-size="12">• Аватары/иконки сервисов — настоящие цвета бренда (Telegram синий, WhatsApp зелёный) — узнаваемо периферическим взглядом.</text>
+  </g>
+</svg>
