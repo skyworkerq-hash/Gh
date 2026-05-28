@@ -139,6 +139,39 @@
 
   footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px}
 
+  /* Tabs */
+  .tabs{display:flex;gap:8px;padding-top:6px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{border:none;cursor:pointer;font-size:14.5px;font-weight:600;padding:11px 20px;
+    border-radius:999px;background:rgba(255,255,255,.2);color:#fff;transition:.15s}
+  .tab:hover{background:rgba(255,255,255,.3)}
+  .tab.on{background:#fff;color:var(--green-dark);box-shadow:var(--shadow)}
+
+  /* Packaging worksheet */
+  .pack{display:flex;flex-direction:column;gap:16px;max-width:760px}
+  .pack-intro{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px 20px}
+  .pack-intro h2{margin:0 0 6px;font-size:18px}
+  .pack-intro p{margin:0;color:var(--muted);font-size:14px}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px}
+  .pcard .step{font-size:12px;font-weight:700;color:var(--green);letter-spacing:.4px;text-transform:uppercase}
+  .pcard h3{margin:4px 0 0;font-size:17px}
+  .pcard .why{background:var(--green-soft);border-radius:10px;padding:10px 13px;font-size:13.5px;
+    color:var(--green-dark);margin:11px 0}
+  .pcard .why b{font-weight:700}
+  .pcard label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:10px 0 5px}
+  .pcard textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 13px;
+    font-family:inherit;font-size:14px;line-height:1.5;background:#fafcf9;outline:none;resize:vertical;min-height:60px}
+  .pcard textarea:focus{border-color:var(--green);background:#fff}
+  .pcard .two-col{display:flex;gap:14px;flex-wrap:wrap}
+  .pcard .two-col>div{flex:1;min-width:230px}
+  .checklist{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+  .checklist label{display:flex;gap:10px;align-items:flex-start;padding:7px 0;cursor:pointer;
+    font-size:14px;border-bottom:1px solid var(--line)}
+  .checklist label:last-child{border-bottom:none}
+  .checklist input{margin-top:3px;width:17px;height:17px;accent-color:var(--green);flex:none}
+  .saved-note{font-size:12px;color:var(--muted);margin-top:4px}
+
   @media(max-width:600px){
     .brand h1{font-size:20px}
     .acct{margin-left:0;width:100%;justify-content:center;margin-top:4px}
@@ -161,6 +194,13 @@
 </header>
 
 <div class="wrap">
+
+  <div class="tabs">
+    <button class="tab on" data-tab="ideas">💡 Банк идей</button>
+    <button class="tab" data-tab="pack">📦 Упаковка профиля</button>
+  </div>
+
+  <section id="tab-ideas">
 
   <div class="stats" id="stats"></div>
 
@@ -200,6 +240,129 @@
     <div class="big">🌱</div>
     <div>Ничего не нашлось. Поменяй фильтры или <b>добавь свою идею</b>.</div>
   </div>
+
+  </section><!-- /tab-ideas -->
+
+  <section id="tab-pack" hidden>
+    <div class="pack">
+      <div class="pack-intro">
+        <h2>📦 Упаковка профиля</h2>
+        <p>«Упаковка» — это первое, что видит новый человек: имя, шапка, актуальное, лента. За 2–3 секунды он решает, подписаться или уйти. Ниже — готовый каркас под блог о растениях. Тексты уже заполнены черновиком — правь под себя, всё сохраняется автоматически.</p>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 1</div>
+        <h3>Позиционирование — о чём блог в одной фразе</h3>
+        <div class="why">За пару секунд человек должен понять: <b>про что блог и зачем подписываться</b>. Сформулируй суть одной строкой — из неё родятся имя и шапка.</div>
+        <label class="fl">Суть блога одной фразой</label>
+        <textarea data-save="positioning" rows="2">Помогаю превратить дом в зелёные джунгли 🪴 Простой уход за комнатными растениями для тех, у кого «всё засыхает» — по-маминому тепло и без занудства.</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 2</div>
+        <h3>Имя профиля (поле «Имя», не ник)</h3>
+        <div class="why">Поле <b>«Имя»</b> участвует в поиске Instagram. Впиши туда не просто «Вика», а <b>ключевые слова</b>, по которым тебя будут искать новички.</div>
+        <label class="fl">Имя для поиска</label>
+        <textarea data-save="name" rows="1">Вика · уход за растениями 🪴</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 3</div>
+        <h3>Шапка профиля (описание / bio)</h3>
+        <div class="why">До 150 знаков. Формула: <b>кто ты + чем полезна + кому + призыв</b>. Короткие строки, эмодзи-маркеры в начале строк, последняя строка — стрелка вниз 👇 на ссылку.</div>
+        <div class="two-col">
+          <div>
+            <label class="fl">Вариант на русском</label>
+            <textarea data-save="bio_ru" rows="5">🪴 Вика — мама и растениевод-любитель
+🌿 Уход за комнатными простыми словами
+💡 Спасаю засохшее, делюсь лайфхаками
+👇 Забери бесплатный гайд для новичка</textarea>
+          </div>
+          <div>
+            <label class="fl">Вариант на английском (ник-то английский)</label>
+            <textarea data-save="bio_en" rows="5">🪴 Houseplant care made simple
+🌿 Tips, fixes & plant rescues
+💌 Mom of two + a jungle at home
+👇 Grab my free beginner guide</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 4</div>
+        <h3>Ссылка под шапкой</h3>
+        <div class="why">Одной ссылки мало. Поставь <b>мультиссылку</b> (Taplink или Linktree) — туда сложи гайд, заказ/консультацию, отзывы, другие соцсети.</div>
+        <label class="fl">Что положить в мультиссылку</label>
+        <textarea data-save="link" rows="3">Taplink:
+• Бесплатный гайд «7 неприхотливых растений»
+• Консультация по уходу / подбор растения
+• Отзывы
+• Telegram-канал</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 5</div>
+        <h3>Актуальное (вечные сторис / хайлайтс)</h3>
+        <div class="why">Это <b>«меню» блога</b>. 6–8 кружочков с <b>едиными обложками</b> в одном стиле и цвете. Первым ставь «Знакомство».</div>
+        <label class="fl">Список актуальных</label>
+        <textarea data-save="highlights" rows="8">1) Старт — кто я и о чём блог
+2) Уход — база: полив, свет, пересадка
+3) Ошибки — частые промахи новичков
+4) До/после — спасённые растения
+5) Размножение — черенки и детки
+6) Подборки — топы растений
+7) Отзывы / благодарности
+8) Купить / консультация</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 6</div>
+        <h3>Закреплённые посты (3 штуки)</h3>
+        <div class="why">Первые 3 поста в ленте видит <b>каждый новый гость</b>. Закрепи самые сильные — знакомство, пользу и доказательство/оффер.</div>
+        <label class="fl">Что закрепить</label>
+        <textarea data-save="pinned" rows="4">1) Знакомство: кто я + за чем подписываться
+2) Польза-карусель: «7 неприхотливых растений» (то, что сохраняют)
+3) До/после или оффер: лучшая трансформация / услуга</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 7</div>
+        <h3>Визуал ленты</h3>
+        <div class="why">Единый вид = ощущение «профи» с первого взгляда. Выбери палитру и шаблон обложек — и держи их во всех постах.</div>
+        <label class="fl">Правила визуала</label>
+        <textarea data-save="visual" rows="5">Палитра: зелёный + тёплый беж + белый
+Обложки каруселей: один шаблон, один шрифт, крупный заголовок
+Фото: дневной свет, чистый фон
+Один пресет/фильтр на все фото</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 8</div>
+        <h3>Аватар и голос блога</h3>
+        <div class="why">На маленьком кружке аватара должно быть всё понятно с первого взгляда. А «голос» держит тон во всех текстах.</div>
+        <label class="fl">Аватар</label>
+        <textarea data-save="avatar" rows="2">Твоё лицо с растением на руках (живые блоги растут лучше) ИЛИ простой значок-листок на однотонном фоне. Без мелких деталей.</textarea>
+        <label class="fl">Tone of voice (голос блога)</label>
+        <textarea data-save="tone" rows="3">Тёплый, как подруга-мама. Простыми словами, без латыни и занудства. Честно про свои провалы. Поддерживаю новичков: «у тебя получится».</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Финал</div>
+        <h3>✅ Чек-лист упаковки</h3>
+        <div class="checklist">
+          <label><input type="checkbox" data-check="c1"> В поле «Имя» есть ключевые слова (растения / уход)</label>
+          <label><input type="checkbox" data-check="c2"> Шапка по формуле, ≤150 знаков, с призывом 👇</label>
+          <label><input type="checkbox" data-check="c3"> Стоит мультиссылка (Taplink / Linktree)</label>
+          <label><input type="checkbox" data-check="c4"> 6–8 актуальных с едиными обложками</label>
+          <label><input type="checkbox" data-check="c5"> Закреплены 3 поста (знакомство + польза + оффер)</label>
+          <label><input type="checkbox" data-check="c6"> Единая палитра и шаблон обложек в ленте</label>
+          <label><input type="checkbox" data-check="c7"> Понятный аватар</label>
+          <label><input type="checkbox" data-check="c8"> В шапке есть оффер (гайд или услуга)</label>
+        </div>
+        <p class="saved-note">Всё на этой вкладке сохраняется в браузере автоматически.</p>
+      </div>
+    </div>
+  </section><!-- /tab-pack -->
 
   <footer>
     <div style="margin-bottom:8px">
@@ -534,10 +697,36 @@ $("#importFile").onchange = e=>{ if(e.target.files[0]) importData(e.target.files
 $("#restoreBtn").onclick = restoreSeed;
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
 
+/* ---------- Вкладки ---------- */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));
+    document.getElementById("tab-ideas").hidden = t.dataset.tab!=="ideas";
+    document.getElementById("tab-pack").hidden  = t.dataset.tab!=="pack";
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+});
+
+/* ---------- Автосохранение упаковки ---------- */
+function initPack(){
+  document.querySelectorAll("[data-save]").forEach(el=>{
+    const k="pack_"+el.dataset.save;
+    const v=localStorage.getItem(k);
+    if(v!==null) el.value=v;
+    el.addEventListener("input",()=>localStorage.setItem(k,el.value));
+  });
+  document.querySelectorAll("[data-check]").forEach(el=>{
+    const k="packchk_"+el.dataset.check;
+    if(localStorage.getItem(k)==="1") el.checked=true;
+    el.addEventListener("change",()=>localStorage.setItem(k,el.checked?"1":"0"));
+  });
+}
+
 /* ---------- Старт ---------- */
 fillRubricSelect();
 load();
 render();
+initPack();
 </script>
 </body>
 </html>
