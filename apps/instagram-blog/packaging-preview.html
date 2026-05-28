@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#dfe7da;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:40px;display:flex;justify-content:center}
+  .phone{width:460px;background:#fff;border-radius:38px;overflow:hidden;
+    box-shadow:0 30px 70px rgba(34,49,42,.28);border:10px solid #1f1f24}
+  .status{height:30px;background:#fff;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;font-size:13px;font-weight:600;color:#222}
+  .topbar{display:flex;align-items:center;gap:8px;padding:6px 16px 12px}
+  .topbar .uname{font-size:19px;font-weight:700;color:#1c1c1c;display:flex;align-items:center;gap:5px}
+  .topbar .lock{font-size:13px;opacity:.6}
+  .topbar .sp{flex:1}
+  .topbar .ic{font-size:19px;opacity:.85}
+
+  .head{display:flex;align-items:center;gap:22px;padding:4px 18px 6px}
+  .ava{width:92px;height:92px;border-radius:50%;flex:none;position:relative;
+    background:linear-gradient(135deg,#5aa06a,#2f5d3d);display:flex;align-items:center;
+    justify-content:center;box-shadow:0 4px 14px rgba(47,93,61,.4)}
+  .ava .leaf{font-size:40px}
+  .ava .ring{position:absolute;inset:-4px;border-radius:50%;border:3px solid #d8a24a}
+  .stats{flex:1;display:flex;justify-content:space-around;text-align:center}
+  .stats .n{font-size:19px;font-weight:700;color:#1c1c1c}
+  .stats .l{font-size:13px;color:#444;margin-top:2px}
+
+  .bio{padding:2px 20px 10px}
+  .bio .name{font-size:14.5px;font-weight:700;color:#1c1c1c}
+  .bio .cat{font-size:13.5px;color:#8a8a8f;margin-bottom:5px}
+  .bio p{font-size:14px;color:#26262b;line-height:1.5}
+  .bio .link{color:#1d6fb8;font-weight:600;font-size:14px;margin-top:4px;display:inline-block}
+
+  .btns{display:flex;gap:7px;padding:6px 18px 14px}
+  .btns div{flex:1;text-align:center;font-size:14px;font-weight:600;padding:8px 0;border-radius:9px}
+  .btns .a{background:#3f7d52;color:#fff}
+  .btns .b{background:#eef1ee;color:#1c1c1c}
+  .btns .c{background:#eef1ee;color:#1c1c1c;flex:none;width:42px}
+
+  .hl{display:flex;gap:16px;padding:6px 18px 16px;overflow:hidden}
+  .hl .item{text-align:center;width:66px;flex:none}
+  .hl .circ{width:64px;height:64px;border-radius:50%;border:2px solid #e3e3e3;
+    display:flex;align-items:center;justify-content:center;font-size:25px;
+    background:#f3efe6}
+  .hl .circ.g{background:#e8f2e8}
+  .hl .lbl{font-size:11.5px;color:#26262b;margin-top:5px;font-weight:500}
+
+  .tabs{display:flex;border-top:1px solid #efefef}
+  .tabs div{flex:1;text-align:center;padding:11px 0;font-size:20px;opacity:.4}
+  .tabs div.on{opacity:1;border-bottom:2px solid #1c1c1c}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:#fff}
+  .cell{aspect-ratio:1/1;position:relative;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;text-align:center;padding:10px;overflow:hidden}
+  .cell .pin{position:absolute;top:6px;right:6px;font-size:13px}
+  .cell .kicker{font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;opacity:.8}
+  .cell .ttl{font-size:14px;font-weight:800;line-height:1.15;margin-top:3px}
+  .cell .leaf{position:absolute;bottom:5px;left:7px;font-size:13px;opacity:.55}
+  /* визуальная система: беж + зелёный, единый шаблон */
+  .c-beige{background:#f3efe6;color:#2f5d3d}
+  .c-green{background:#e8f2e8;color:#2f5d3d}
+  .c-deep{background:#3f7d52;color:#fff}
+  .c-deep .kicker{opacity:.9}
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="status"><span>9:41</span><span>🔋 5G</span></div>
+
+    <div class="topbar">
+      <span class="uname">vikamomplants <span class="lock">🌿</span></span>
+      <span class="sp"></span>
+      <span class="ic">＋</span><span class="ic">☰</span>
+    </div>
+
+    <div class="head">
+      <div class="ava"><span class="ring"></span><span class="leaf">🪴</span></div>
+      <div class="stats">
+        <div><div class="n">214</div><div class="l">постов</div></div>
+        <div><div class="n">8 740</div><div class="l">подписчиков</div></div>
+        <div><div class="n">312</div><div class="l">подписки</div></div>
+      </div>
+    </div>
+
+    <div class="bio">
+      <div class="name">Вика · уход за растениями 🪴</div>
+      <div class="cat">Блогер о растениях</div>
+      <p>🪴 Вика — мама и растениевод-любитель<br>
+         🌿 Уход за комнатными простыми словами<br>
+         💡 Спасаю засохшее, делюсь лайфхаками<br>
+         👇 Забери бесплатный гайд для новичка</p>
+      <span class="link">🔗 taplink.cc/vikamomplants</span>
+    </div>
+
+    <div class="btns">
+      <div class="a">Подписаться</div>
+      <div class="b">Сообщение</div>
+      <div class="c">▾</div>
+    </div>
+
+    <div class="hl">
+      <div class="item"><div class="circ g">🌱</div><div class="lbl">Старт</div></div>
+      <div class="item"><div class="circ">💧</div><div class="lbl">Уход</div></div>
+      <div class="item"><div class="circ g">⚠️</div><div class="lbl">Ошибки</div></div>
+      <div class="item"><div class="circ">✨</div><div class="lbl">До/после</div></div>
+      <div class="item"><div class="circ g">🌿</div><div class="lbl">Размнож.</div></div>
+      <div class="item"><div class="circ">🛍️</div><div class="lbl">Купить</div></div>
+    </div>
+
+    <div class="tabs"><div class="on">▦</div><div>🎬</div><div>🏷️</div></div>
+
+    <div class="grid">
+      <div class="cell c-deep"><span class="pin">📌</span><div class="kicker">Знакомство</div><div class="ttl">Привет,<br>я Вика 🌿</div><span class="leaf">🪴</span></div>
+      <div class="cell c-beige"><span class="pin">📌</span><div class="kicker">Подборка</div><div class="ttl">7 растений<br>для новичка</div><span class="leaf">🌿</span></div>
+      <div class="cell c-green"><span class="pin">📌</span><div class="kicker">До / после</div><div class="ttl">Спасла<br>орхидею</div><span class="leaf">✨</span></div>
+
+      <div class="cell c-beige"><div class="kicker">Уход</div><div class="ttl">Как часто<br>поливать</div><span class="leaf">💧</span></div>
+      <div class="cell c-green"><div class="kicker">Ошибки</div><div class="ttl">7 ошибок<br>новичков</div><span class="leaf">⚠️</span></div>
+      <div class="cell c-beige"><div class="kicker">Лайфхак</div><div class="ttl">Полив<br>в отпуск</div><span class="leaf">💡</span></div>
+
+      <div class="cell c-green"><div class="kicker">Размножение</div><div class="ttl">Черенки<br>за 60 сек</div><span class="leaf">🌱</span></div>
+      <div class="cell c-deep"><div class="kicker">Reels</div><div class="ttl">Утро среди<br>растений</div><span class="leaf">☕</span></div>
+      <div class="cell c-beige"><div class="kicker">Подборка</div><div class="ttl">Для тёмной<br>квартиры</div><span class="leaf">🌿</span></div>
+    </div>
+  </div>
+</body>
+</html>

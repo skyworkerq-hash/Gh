@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Управа блога · Банк идей для Instagram о растениях</title>
+<style>
+  :root{
+    --bg:#f4f7f2;
+    --card:#ffffff;
+    --ink:#22312a;
+    --muted:#6b7d70;
+    --line:#e2ebe1;
+    --green:#3f7d52;
+    --green-dark:#2f5d3d;
+    --green-soft:#e8f2e8;
+    --accent:#c98a3b;
+    --shadow:0 1px 2px rgba(34,49,42,.06),0 6px 20px rgba(34,49,42,.07);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 80px}
+
+  /* Header */
+  header.top{
+    background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);
+    color:#fff;padding:26px 0 70px;margin-bottom:-48px;
+  }
+  .top .wrap{padding-bottom:0}
+  .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .brand h1{font-size:23px;margin:0;font-weight:700;letter-spacing:-.3px}
+  .brand .leaf{font-size:30px;line-height:1}
+  .brand .sub{opacity:.85;font-size:13.5px;margin-top:3px}
+  .acct{margin-left:auto;font-size:13px;background:rgba(255,255,255,.15);
+    padding:7px 13px;border-radius:999px;display:flex;align-items:center;gap:7px}
+  .acct b{font-weight:600}
+
+  /* Stats */
+  .stats{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 18px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:14px 18px;box-shadow:var(--shadow);flex:1;min-width:130px}
+  .stat .n{font-size:26px;font-weight:700;color:var(--green-dark);line-height:1}
+  .stat .l{font-size:12.5px;color:var(--muted);margin-top:5px}
+
+  /* Toolbar */
+  .toolbar{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:16px;margin-bottom:20px}
+  .toolbar .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .search{flex:1;min-width:200px;position:relative}
+  .search input{width:100%;padding:11px 14px 11px 38px;border:1px solid var(--line);
+    border-radius:11px;font-size:14.5px;background:#fafcf9;outline:none}
+  .search input:focus{border-color:var(--green);background:#fff}
+  .search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.45}
+  select{padding:11px 12px;border:1px solid var(--line);border-radius:11px;
+    font-size:14px;background:#fafcf9;color:var(--ink);outline:none;cursor:pointer}
+  select:focus{border-color:var(--green)}
+
+  .btn{border:none;border-radius:11px;padding:11px 18px;font-size:14.5px;font-weight:600;
+    cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.15s;white-space:nowrap}
+  .btn-primary{background:var(--green);color:#fff}
+  .btn-primary:hover{background:var(--green-dark)}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent:hover{filter:brightness(.94)}
+  .btn-ghost{background:var(--green-soft);color:var(--green-dark)}
+  .btn-ghost:hover{background:#dcebdc}
+  .btn-mini{padding:7px 12px;font-size:13px;font-weight:600;border-radius:9px;
+    border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer}
+  .btn-mini:hover{border-color:var(--green);color:var(--green-dark)}
+  .btn-mini.on{background:var(--green-soft);border-color:var(--green);color:var(--green-dark)}
+
+  /* Rubric chips */
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .chip{padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;
+    font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+  .chip:hover{border-color:var(--green)}
+  .chip.on{background:var(--green);border-color:var(--green);color:#fff}
+  .chip .c{font-size:12px;opacity:.7}
+  .chip.on .c{opacity:.9}
+
+  /* Cards grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .ideacard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px;position:relative;
+    transition:.15s}
+  .ideacard:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(34,49,42,.08),0 12px 28px rgba(34,49,42,.10)}
+  .ideacard.used{opacity:.62}
+  .ideacard .tags{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .tag{font-size:11.5px;padding:4px 9px;border-radius:999px;font-weight:600;white-space:nowrap}
+  .tag.rubric{color:#fff}
+  .tag.format{background:#eef1ee;color:var(--muted)}
+  .tag.mine{background:#fdf0e0;color:var(--accent)}
+  .ideacard h3{margin:2px 0 0;font-size:16.5px;font-weight:700;letter-spacing:-.2px}
+  .ideacard p{margin:0;font-size:14px;color:var(--muted)}
+  .ideacard .foot{margin-top:auto;display:flex;gap:6px;align-items:center;padding-top:6px;flex-wrap:wrap}
+  .icbtn{border:1px solid var(--line);background:#fff;border-radius:9px;width:34px;height:34px;
+    display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:.15s}
+  .icbtn:hover{border-color:var(--green)}
+  .icbtn.fav.on{background:#fff7e6;border-color:var(--accent);color:var(--accent)}
+  .icbtn.done.on{background:var(--green-soft);border-color:var(--green);color:var(--green-dark)}
+  .foot .spacer{flex:1}
+
+  .empty{text-align:center;padding:70px 20px;color:var(--muted)}
+  .empty .big{font-size:46px;margin-bottom:10px}
+
+  /* Modal */
+  .overlay{position:fixed;inset:0;background:rgba(28,40,32,.45);display:none;
+    align-items:flex-start;justify-content:center;padding:40px 16px;z-index:50;overflow:auto}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:18px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.3);
+    padding:24px}
+  .modal h2{margin:0 0 4px;font-size:19px}
+  .modal .hint{color:var(--muted);font-size:13px;margin:0 0 18px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
+  .field input,.field textarea,.field select{width:100%;padding:11px 13px;border:1px solid var(--line);
+    border-radius:11px;font-size:14.5px;font-family:inherit;background:#fafcf9;outline:none}
+  .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--green);background:#fff}
+  .field textarea{min-height:90px;resize:vertical}
+  .modal .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+  .modal .two{display:flex;gap:12px}
+  .modal .two>*{flex:1}
+
+  /* Generator banner */
+  .gen{background:var(--green-soft);border:1px dashed #9cc4a3;border-radius:var(--radius);
+    padding:16px 18px;margin-bottom:20px;display:none;gap:14px;align-items:center}
+  .gen.show{display:flex}
+  .gen .leaf{font-size:30px}
+  .gen .body{flex:1}
+  .gen .body .r{font-size:12px;font-weight:700;color:var(--green-dark);text-transform:uppercase;letter-spacing:.4px}
+  .gen .body h3{margin:3px 0 4px;font-size:17px}
+  .gen .body p{margin:0;font-size:13.5px;color:var(--muted)}
+  .gen .x{cursor:pointer;font-size:20px;color:var(--muted);align-self:flex-start}
+
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:34px}
+
+  /* Tabs */
+  .tabs{display:flex;gap:8px;padding-top:6px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{border:none;cursor:pointer;font-size:14.5px;font-weight:600;padding:11px 20px;
+    border-radius:999px;background:rgba(255,255,255,.2);color:#fff;transition:.15s}
+  .tab:hover{background:rgba(255,255,255,.3)}
+  .tab.on{background:#fff;color:var(--green-dark);box-shadow:var(--shadow)}
+
+  /* Packaging worksheet */
+  .pack{display:flex;flex-direction:column;gap:16px;max-width:760px}
+  .pack-intro{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:18px 20px}
+  .pack-intro h2{margin:0 0 6px;font-size:18px}
+  .pack-intro p{margin:0;color:var(--muted);font-size:14px}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px}
+  .pcard .step{font-size:12px;font-weight:700;color:var(--green);letter-spacing:.4px;text-transform:uppercase}
+  .pcard h3{margin:4px 0 0;font-size:17px}
+  .pcard .why{background:var(--green-soft);border-radius:10px;padding:10px 13px;font-size:13.5px;
+    color:var(--green-dark);margin:11px 0}
+  .pcard .why b{font-weight:700}
+  .pcard label.fl{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin:10px 0 5px}
+  .pcard textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px 13px;
+    font-family:inherit;font-size:14px;line-height:1.5;background:#fafcf9;outline:none;resize:vertical;min-height:60px}
+  .pcard textarea:focus{border-color:var(--green);background:#fff}
+  .pcard .two-col{display:flex;gap:14px;flex-wrap:wrap}
+  .pcard .two-col>div{flex:1;min-width:230px}
+  .checklist{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+  .checklist label{display:flex;gap:10px;align-items:flex-start;padding:7px 0;cursor:pointer;
+    font-size:14px;border-bottom:1px solid var(--line)}
+  .checklist label:last-child{border-bottom:none}
+  .checklist input{margin-top:3px;width:17px;height:17px;accent-color:var(--green);flex:none}
+  .saved-note{font-size:12px;color:var(--muted);margin-top:4px}
+
+  @media(max-width:600px){
+    .brand h1{font-size:20px}
+    .acct{margin-left:0;width:100%;justify-content:center;margin-top:4px}
+    .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <span class="leaf">🪴</span>
+      <div>
+        <h1>Управа блога</h1>
+        <div class="sub">Банк идей и рубрик для блога о растениях</div>
+      </div>
+      <div class="acct">📷 <b id="acctName">@vikamomplants</b></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="tabs">
+    <button class="tab on" data-tab="ideas">💡 Банк идей</button>
+    <button class="tab" data-tab="pack">📦 Упаковка профиля</button>
+  </div>
+
+  <section id="tab-ideas">
+
+  <div class="stats" id="stats"></div>
+
+  <div class="gen" id="gen">
+    <span class="leaf">💡</span>
+    <div class="body">
+      <div class="r" id="genRubric"></div>
+      <h3 id="genTitle"></h3>
+      <p id="genText"></p>
+    </div>
+    <span class="x" id="genClose" title="Закрыть">✕</span>
+  </div>
+
+  <div class="toolbar">
+    <div class="row">
+      <div class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        <input id="search" type="text" placeholder="Поиск по идеям…">
+      </div>
+      <select id="formatFilter">
+        <option value="">Все форматы</option>
+        <option>Пост</option>
+        <option>Карусель</option>
+        <option>Reels</option>
+        <option>Stories</option>
+      </select>
+      <button class="btn-mini" id="favFilter">⭐ Избранное</button>
+      <button class="btn-mini" id="hideUsed">Скрыть использованные</button>
+      <button class="btn btn-accent" id="surprise">🎲 Подкинь идею</button>
+      <button class="btn btn-primary" id="addBtn">＋ Своя идея</button>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">
+    <div class="big">🌱</div>
+    <div>Ничего не нашлось. Поменяй фильтры или <b>добавь свою идею</b>.</div>
+  </div>
+
+  </section><!-- /tab-ideas -->
+
+  <section id="tab-pack" hidden>
+    <div class="pack">
+      <div class="pack-intro">
+        <h2>📦 Упаковка профиля</h2>
+        <p>«Упаковка» — это первое, что видит новый человек: имя, шапка, актуальное, лента. За 2–3 секунды он решает, подписаться или уйти. Ниже — готовый каркас под блог о растениях. Тексты уже заполнены черновиком — правь под себя, всё сохраняется автоматически.</p>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 1</div>
+        <h3>Позиционирование — о чём блог в одной фразе</h3>
+        <div class="why">За пару секунд человек должен понять: <b>про что блог и зачем подписываться</b>. Сформулируй суть одной строкой — из неё родятся имя и шапка.</div>
+        <label class="fl">Суть блога одной фразой</label>
+        <textarea data-save="positioning" rows="2">Помогаю превратить дом в зелёные джунгли 🪴 Простой уход за комнатными растениями для тех, у кого «всё засыхает» — по-маминому тепло и без занудства.</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 2</div>
+        <h3>Имя профиля (поле «Имя», не ник)</h3>
+        <div class="why">Поле <b>«Имя»</b> участвует в поиске Instagram. Впиши туда не просто «Вика», а <b>ключевые слова</b>, по которым тебя будут искать новички.</div>
+        <label class="fl">Имя для поиска</label>
+        <textarea data-save="name" rows="1">Вика · уход за растениями 🪴</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 3</div>
+        <h3>Шапка профиля (описание / bio)</h3>
+        <div class="why">До 150 знаков. Формула: <b>кто ты + чем полезна + кому + призыв</b>. Короткие строки, эмодзи-маркеры в начале строк, последняя строка — стрелка вниз 👇 на ссылку.</div>
+        <div class="two-col">
+          <div>
+            <label class="fl">Вариант на русском</label>
+            <textarea data-save="bio_ru" rows="5">🪴 Вика — мама и растениевод-любитель
+🌿 Уход за комнатными простыми словами
+💡 Спасаю засохшее, делюсь лайфхаками
+👇 Забери бесплатный гайд для новичка</textarea>
+          </div>
+          <div>
+            <label class="fl">Вариант на английском (ник-то английский)</label>
+            <textarea data-save="bio_en" rows="5">🪴 Houseplant care made simple
+🌿 Tips, fixes & plant rescues
+💌 Mom of two + a jungle at home
+👇 Grab my free beginner guide</textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 4</div>
+        <h3>Ссылка под шапкой</h3>
+        <div class="why">Одной ссылки мало. Поставь <b>мультиссылку</b> (Taplink или Linktree) — туда сложи гайд, заказ/консультацию, отзывы, другие соцсети.</div>
+        <label class="fl">Что положить в мультиссылку</label>
+        <textarea data-save="link" rows="3">Taplink:
+• Бесплатный гайд «7 неприхотливых растений»
+• Консультация по уходу / подбор растения
+• Отзывы
+• Telegram-канал</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 5</div>
+        <h3>Актуальное (вечные сторис / хайлайтс)</h3>
+        <div class="why">Это <b>«меню» блога</b>. 6–8 кружочков с <b>едиными обложками</b> в одном стиле и цвете. Первым ставь «Знакомство».</div>
+        <label class="fl">Список актуальных</label>
+        <textarea data-save="highlights" rows="8">1) Старт — кто я и о чём блог
+2) Уход — база: полив, свет, пересадка
+3) Ошибки — частые промахи новичков
+4) До/после — спасённые растения
+5) Размножение — черенки и детки
+6) Подборки — топы растений
+7) Отзывы / благодарности
+8) Купить / консультация</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 6</div>
+        <h3>Закреплённые посты (3 штуки)</h3>
+        <div class="why">Первые 3 поста в ленте видит <b>каждый новый гость</b>. Закрепи самые сильные — знакомство, пользу и доказательство/оффер.</div>
+        <label class="fl">Что закрепить</label>
+        <textarea data-save="pinned" rows="4">1) Знакомство: кто я + за чем подписываться
+2) Польза-карусель: «7 неприхотливых растений» (то, что сохраняют)
+3) До/после или оффер: лучшая трансформация / услуга</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 7</div>
+        <h3>Визуал ленты</h3>
+        <div class="why">Единый вид = ощущение «профи» с первого взгляда. Выбери палитру и шаблон обложек — и держи их во всех постах.</div>
+        <label class="fl">Правила визуала</label>
+        <textarea data-save="visual" rows="5">Палитра: зелёный + тёплый беж + белый
+Обложки каруселей: один шаблон, один шрифт, крупный заголовок
+Фото: дневной свет, чистый фон
+Один пресет/фильтр на все фото</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Шаг 8</div>
+        <h3>Аватар и голос блога</h3>
+        <div class="why">На маленьком кружке аватара должно быть всё понятно с первого взгляда. А «голос» держит тон во всех текстах.</div>
+        <label class="fl">Аватар</label>
+        <textarea data-save="avatar" rows="2">Твоё лицо с растением на руках (живые блоги растут лучше) ИЛИ простой значок-листок на однотонном фоне. Без мелких деталей.</textarea>
+        <label class="fl">Tone of voice (голос блога)</label>
+        <textarea data-save="tone" rows="3">Тёплый, как подруга-мама. Простыми словами, без латыни и занудства. Честно про свои провалы. Поддерживаю новичков: «у тебя получится».</textarea>
+      </div>
+
+      <div class="pcard">
+        <div class="step">Финал</div>
+        <h3>✅ Чек-лист упаковки</h3>
+        <div class="checklist">
+          <label><input type="checkbox" data-check="c1"> В поле «Имя» есть ключевые слова (растения / уход)</label>
+          <label><input type="checkbox" data-check="c2"> Шапка по формуле, ≤150 знаков, с призывом 👇</label>
+          <label><input type="checkbox" data-check="c3"> Стоит мультиссылка (Taplink / Linktree)</label>
+          <label><input type="checkbox" data-check="c4"> 6–8 актуальных с едиными обложками</label>
+          <label><input type="checkbox" data-check="c5"> Закреплены 3 поста (знакомство + польза + оффер)</label>
+          <label><input type="checkbox" data-check="c6"> Единая палитра и шаблон обложек в ленте</label>
+          <label><input type="checkbox" data-check="c7"> Понятный аватар</label>
+          <label><input type="checkbox" data-check="c8"> В шапке есть оффер (гайд или услуга)</label>
+        </div>
+        <p class="saved-note">Всё на этой вкладке сохраняется в браузере автоматически.</p>
+      </div>
+    </div>
+  </section><!-- /tab-pack -->
+
+  <footer>
+    <div style="margin-bottom:8px">
+      <button class="btn-mini" id="exportBtn">⬇ Сохранить копию (файл)</button>
+      <button class="btn-mini" id="importBtn">⬆ Загрузить копию</button>
+      <button class="btn-mini" id="restoreBtn">↺ Вернуть базовые идеи</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </div>
+    Все идеи хранятся прямо в твоём браузере на этом устройстве. Никуда не отправляются.
+  </footer>
+</div>
+
+<!-- Modal: add/edit idea -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">Своя идея</h2>
+    <p class="hint">Запиши идею поста, чтобы не держать в голове.</p>
+    <div class="field">
+      <label>Заголовок идеи</label>
+      <input id="fTitle" type="text" placeholder="Напр.: 5 растений, которые простят вам забывчивость">
+    </div>
+    <div class="field">
+      <label>Описание / подсказка (необязательно)</label>
+      <textarea id="fText" placeholder="О чём пост, какой посыл, что показать на фото…"></textarea>
+    </div>
+    <div class="two">
+      <div class="field">
+        <label>Рубрика</label>
+        <select id="fRubric"></select>
+      </div>
+      <div class="field">
+        <label>Формат</label>
+        <select id="fFormat">
+          <option>Пост</option><option>Карусель</option><option>Reels</option><option>Stories</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="cancelBtn">Отмена</button>
+      <button class="btn btn-primary" id="saveBtn">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Рубрики ---------- */
+const RUBRICS = [
+  {id:"care",        name:"Уход за растениями", emoji:"🪴", color:"#3f7d52"},
+  {id:"plant-week",  name:"Растение недели",    emoji:"🌿", color:"#5a9367"},
+  {id:"mistakes",    name:"Ошибки новичков",    emoji:"⚠️", color:"#c97b3b"},
+  {id:"before-after",name:"До / после",         emoji:"✨", color:"#8a6cb0"},
+  {id:"propagation", name:"Размножение",        emoji:"🌱", color:"#4f9d6b"},
+  {id:"lifehacks",   name:"Лайфхаки",           emoji:"💡", color:"#d2a23a"},
+  {id:"personal",    name:"Личное / за кадром", emoji:"☕", color:"#a8745a"},
+  {id:"qa",          name:"Вопрос-ответ",       emoji:"❓", color:"#4a90c2"},
+  {id:"seasonal",    name:"Сезонное",           emoji:"🍂", color:"#c0703a"},
+  {id:"roundups",    name:"Подборки",           emoji:"📋", color:"#5b8a8c"},
+  {id:"pests",       name:"Вредители и болезни",emoji:"🐛", color:"#a14b4b"},
+  {id:"decor",       name:"Декор и интерьер",   emoji:"🖼️", color:"#7e8b54"},
+  {id:"shopping",    name:"Покупки и распаковки",emoji:"🛍️", color:"#bf6fa0"},
+  {id:"engagement",  name:"Вовлечение (Stories)",emoji:"💬", color:"#4aa3a0"},
+];
+const rubMap = Object.fromEntries(RUBRICS.map(r=>[r.id,r]));
+
+/* ---------- Базовый банк идей ---------- */
+const SEED = [
+  // Уход
+  ["care","Карусель","Как правильно поливать комнатные растения","Главная ошибка новичков. Покажи: проверка пальцем/палочкой, полив по краю горшка, дренаж. Разбей мифы про «полив по расписанию»."],
+  ["care","Reels","Пересадка шаг за шагом","Сними короткое видео полной пересадки одного растения: горшок, грунт, дренаж, как расправить корни."],
+  ["care","Пост","Сколько света нужно растению на самом деле","Объясни разницу: яркий рассеянный, прямое солнце, полутень. Дай примеры под каждое окно (С/Ю/В/З)."],
+  ["care","Карусель","Чек-лист: растение здорово?","5–7 признаков здорового растения и 5 тревожных звоночков. Удобно сохранять."],
+  ["care","Stories","Опрос: как часто вы поливаете?","Запусти опрос с вариантами и в ответном сторис разбери, почему «по графику» — плохая идея."],
+  // Растение недели
+  ["plant-week","Карусель","Растение недели: знакомство","Выбери одно растение. Расскажи: родина, характер, свет, полив, для кого подойдёт. Сделай постоянной рубрикой."],
+  ["plant-week","Пост","Почему я люблю это растение","Личная история про конкретное растение из твоей коллекции: как появилось, чем покорило."],
+  ["plant-week","Reels","Один день из жизни моего любимца","Динамичное видео: растение в разном свете дня, новый лист, детали листвы крупным планом."],
+  // Ошибки новичков
+  ["mistakes","Карусель","7 ошибок, которые убивают растения","Топ ошибок: перелив, тёмный угол, холодная вода, сквозняк, пересадка не вовремя. По слайду на ошибку."],
+  ["mistakes","Reels","Я тоже так делала 😅","Лёгкое видео-признание про свои прошлые ошибки в уходе. Снимает дистанцию с аудиторией."],
+  ["mistakes","Пост","Перелив против засухи: как отличить","Симптомы похожи (вялые листья), но лечение разное. Научи отличать по почве и корням."],
+  ["mistakes","Stories","Угадай ошибку по фото","Покажи фото проблемного растения и спроси «что не так?». Ответы — в следующем сторис."],
+  // До/после
+  ["before-after","Карусель","Реанимация: было / стало","Покажи растение, которое спасла. Что сделала по шагам и сколько времени заняло."],
+  ["before-after","Reels","Трансформация за 3 месяца","Таймлапс/слайдшоу роста растения. Музыка + цифры (новых листьев, см роста)."],
+  ["before-after","Пост","Как я спасла залитую орхидею","Подробная история одной реанимации с фото корней до и после."],
+  // Размножение
+  ["propagation","Reels","Черенкование за 60 секунд","Быстрое видео: где резать, в воду или грунт, чего ждать. Понятная инструкция."],
+  ["propagation","Карусель","Размножаем растение: 5 способов","Черенки, листья, деление, детки, воздушные отводки. По слайду + для каких растений."],
+  ["propagation","Пост","Мои черенки прижились — отчёт","Покажи прогресс укоренения по неделям. Вовлекает следить за продолжением."],
+  ["propagation","Stories","Раздаю отростки 🌱","Анонс: отдаю/меняю детки растений. Отличный способ оживить активность."],
+  // Лайфхаки
+  ["lifehacks","Карусель","10 лайфхаков для зелёного дома","Подкормка из подручного, фитильный полив на отпуск, влажность без увлажнителя и т.д."],
+  ["lifehacks","Reels","Полив на время отпуска","Покажи рабочий способ не угробить растения, пока тебя нет 1–2 недели."],
+  ["lifehacks","Пост","Чем подкормить без магазинной химии","Безопасные домашние варианты подкормки и когда они уместны (а когда нет)."],
+  ["lifehacks","Карусель","Бюджетные инструменты растениевода","Что реально нужно новичку и что можно заменить тем, что есть дома."],
+  // Личное
+  ["personal","Reels","Утро мамы среди растений","Уютное видео про твоё утро: кофе, опрыскивание, дети и зелень. Лайфстайл-контент сближает."],
+  ["personal","Пост","Как растения помогли мне в декрете","Личная история: почему растения стали отдушиной. Эмоциональный пост, собирает отклик."],
+  ["personal","Stories","Закулисье: мой подоконник прямо сейчас","Честное сторис без прикрас — реальный вид твоей коллекции сегодня."],
+  ["personal","Карусель","Моя коллекция: экскурсия по дому","Проведи по комнатам и покажи, где какие растения живут и почему именно там."],
+  // Вопрос-ответ
+  ["qa","Stories","Рубрика «Спроси про растения»","Открой бокс вопросов в сторис, собери и разбери в карусели или ответных сторис."],
+  ["qa","Карусель","Отвечаю на частые вопросы подписчиков","Собери 5 самых частых вопросов из директа и ответь по слайдам."],
+  ["qa","Reels","«Почему желтеют листья?» — разбор","Короткий ответ на самый популярный вопрос новичков с причинами и решением."],
+  // Сезонное
+  ["seasonal","Карусель","Уход за растениями зимой","Меньше полива, досветка, подальше от батарей, влажность. Сезонный чек-лист."],
+  ["seasonal","Пост","Весна: пора пересадки и подкормки","Что делать с растениями с приходом тепла. Запускает сезонную активность."],
+  ["seasonal","Reels","Готовим растения к лету","Притенение, отпуск, переезд на балкон — короткое полезное видео."],
+  ["seasonal","Stories","Чек-лист сезона","Опрос «успели пересадить?» + напоминание о сезонных делах."],
+  // Подборки
+  ["roundups","Карусель","Топ-7 неприхотливых растений","Для тех, кто всё время забывает поливать. По слайду с фото и парой слов."],
+  ["roundups","Карусель","Растения для тёмной квартиры","Что выживет без яркого солнца. Очень спасает подписчиков-новичков."],
+  ["roundups","Пост","Растения, безопасные для котов и детей","Актуально для мам и хозяев животных. Соберёт сохранения."],
+  ["roundups","Карусель","5 растений, которые очищают воздух","Подборка с пользой для дома + краткий уход за каждым."],
+  ["roundups","Reels","Топ растений для ванной","Любят влажность и тень — идеальны для ванной. Динамичная подборка."],
+  // Вредители
+  ["pests","Карусель","Главные вредители и как их победить","Паутинный клещ, щитовка, мучнистый червец, тля. Признаки + что делать."],
+  ["pests","Пост","Белый налёт на земле: что это и опасно ли","Разбор частой паники новичков. Плесень, соли, как исправить."],
+  ["pests","Reels","Как я вывела паутинного клеща","Личный кейс борьбы с вредителем по шагам."],
+  ["pests","Stories","Помогите определить вредителя","Фото проблемы + бокс вопросов. Вовлекает экспертную аудиторию."],
+  // Декор
+  ["decor","Карусель","Как красиво расставить растения дома","Принципы композиции: высота, группировка, кашпо в одной гамме."],
+  ["decor","Reels","Преображаю скучный угол растениями","До/после уголка комнаты с зеленью. Очень вирусный формат."],
+  ["decor","Пост","Кашпо, которые я люблю","Подборка кашпо под разный интерьер + где искать недорого."],
+  ["decor","Карусель","Растения в маленькой квартире","Идеи вертикального озеленения, полки, подвесные кашпо."],
+  // Покупки
+  ["shopping","Reels","Распаковка новых растений","Эмоциональная распаковка покупки/посылки. Знакомим с новичками коллекции."],
+  ["shopping","Пост","Где я покупаю растения","Честный обзор магазинов/площадок: плюсы, минусы, на что смотреть."],
+  ["shopping","Карусель","Как выбрать растение в магазине","На что смотреть: листья, корни, грунт, вредители. Спасает от больных покупок."],
+  ["shopping","Stories","Покупка дня 🛍️","Покажи новую покупку и спроси, как назвать растение."],
+  // Вовлечение
+  ["engagement","Stories","Игра: какое ты растение?","Шуточный тест в сторис. Лёгкий вовлекающий контент."],
+  ["engagement","Stories","Этот или этот? 🌿","Опрос с двумя растениями — что нравится больше. Простой способ поднять активность."],
+  ["engagement","Пост","Покажите свой подоконник в комментариях","Призыв делиться фото. Раскачивает комментарии и охваты."],
+  ["engagement","Карусель","Мифы о растениях, в которые вы верите","Развенчай популярные мифы. Спорный контент = обсуждение."],
+  ["engagement","Stories","Угадай растение по листу","Крупное фото листа — угадайка в сторис с ответом позже."],
+];
+
+/* ---------- Хранилище ---------- */
+const KEY = "vikablog_ideas_v1";
+let ideas = [];
+
+function seedIdeas(){
+  return SEED.map((s,i)=>({
+    id:"seed-"+i, rubric:s[0], format:s[1], title:s[2], text:s[3],
+    mine:false, fav:false, used:false
+  }));
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){ ideas = JSON.parse(raw); return; }
+  }catch(e){}
+  ideas = seedIdeas();
+  save();
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(ideas)); }catch(e){} }
+
+/* ---------- Состояние фильтров ---------- */
+const state = { rubric:"", format:"", q:"", favOnly:false, hideUsed:false };
+let editingId = null;
+
+/* ---------- Рендер ---------- */
+const $ = s=>document.querySelector(s);
+const grid = $("#grid"), empty = $("#empty");
+
+function renderChips(){
+  const wrap = $("#chips");
+  const all = `<span class="chip ${state.rubric===""?"on":""}" data-r="">Все рубрики</span>`;
+  const items = RUBRICS.map(r=>{
+    const cnt = ideas.filter(i=>i.rubric===r.id).length;
+    const on = state.rubric===r.id?"on":"";
+    return `<span class="chip ${on}" data-r="${r.id}" ${on?`style="background:${r.color};border-color:${r.color}"`:""}>${r.emoji} ${r.name} <span class="c">${cnt}</span></span>`;
+  }).join("");
+  wrap.innerHTML = all + items;
+  wrap.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ state.rubric=c.dataset.r; render(); });
+}
+
+function renderStats(){
+  const total = ideas.length;
+  const used = ideas.filter(i=>i.used).length;
+  const fav = ideas.filter(i=>i.fav).length;
+  const ready = total-used;
+  $("#stats").innerHTML = `
+    <div class="stat"><div class="n">${total}</div><div class="l">идей всего</div></div>
+    <div class="stat"><div class="n">${ready}</div><div class="l">ждут публикации</div></div>
+    <div class="stat"><div class="n">${used}</div><div class="l">опубликовано</div></div>
+    <div class="stat"><div class="n">${fav}</div><div class="l">в избранном</div></div>
+    <div class="stat"><div class="n">${RUBRICS.length}</div><div class="l">рубрик</div></div>`;
+}
+
+function filtered(){
+  const q = state.q.trim().toLowerCase();
+  return ideas.filter(i=>{
+    if(state.rubric && i.rubric!==state.rubric) return false;
+    if(state.format && i.format!==state.format) return false;
+    if(state.favOnly && !i.fav) return false;
+    if(state.hideUsed && i.used) return false;
+    if(q && !(i.title.toLowerCase().includes(q) || (i.text||"").toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+
+function card(i){
+  const r = rubMap[i.rubric] || {name:i.rubric,color:"#888",emoji:"🌿"};
+  return `<div class="ideacard ${i.used?"used":""}" data-id="${i.id}">
+    <div class="tags">
+      <span class="tag rubric" style="background:${r.color}">${r.emoji} ${r.name}</span>
+      <span class="tag format">${i.format}</span>
+      ${i.mine?`<span class="tag mine">моя</span>`:""}
+    </div>
+    <h3>${esc(i.title)}</h3>
+    ${i.text?`<p>${esc(i.text)}</p>`:""}
+    <div class="foot">
+      <button class="icbtn fav ${i.fav?"on":""}" data-act="fav" title="В избранное">${i.fav?"⭐":"☆"}</button>
+      <button class="icbtn done ${i.used?"on":""}" data-act="used" title="Опубликовано">✓</button>
+      <span class="spacer"></span>
+      <button class="icbtn" data-act="edit" title="Редактировать">✏️</button>
+      <button class="icbtn" data-act="del" title="Удалить">🗑️</button>
+    </div>
+  </div>`;
+}
+
+function render(){
+  renderStats(); renderChips();
+  const list = filtered();
+  if(list.length===0){ grid.innerHTML=""; empty.style.display="block"; }
+  else{ empty.style.display="none"; grid.innerHTML = list.map(card).join(""); }
+  $("#favFilter").classList.toggle("on", state.favOnly);
+  $("#hideUsed").classList.toggle("on", state.hideUsed);
+  grid.querySelectorAll(".ideacard").forEach(el=>{
+    const id = el.dataset.id;
+    el.querySelectorAll("[data-act]").forEach(b=>{
+      b.onclick=()=>act(b.dataset.act, id);
+    });
+  });
+}
+
+function act(a,id){
+  const i = ideas.find(x=>x.id===id); if(!i) return;
+  if(a==="fav"){ i.fav=!i.fav; save(); render(); }
+  else if(a==="used"){ i.used=!i.used; save(); render(); }
+  else if(a==="edit"){ openModal(i); }
+  else if(a==="del"){
+    if(confirm("Удалить идею «"+i.title+"»?")){ ideas=ideas.filter(x=>x.id!==id); save(); render(); }
+  }
+}
+
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------- Модалка ---------- */
+function fillRubricSelect(){
+  $("#fRubric").innerHTML = RUBRICS.map(r=>`<option value="${r.id}">${r.emoji} ${r.name}</option>`).join("");
+}
+function openModal(i){
+  editingId = i?i.id:null;
+  $("#modalTitle").textContent = i?"Редактировать идею":"Своя идея";
+  $("#fTitle").value = i?i.title:"";
+  $("#fText").value = i?(i.text||""):"";
+  $("#fRubric").value = i?i.rubric:RUBRICS[0].id;
+  $("#fFormat").value = i?i.format:"Пост";
+  $("#overlay").classList.add("show");
+  $("#fTitle").focus();
+}
+function closeModal(){ $("#overlay").classList.remove("show"); editingId=null; }
+function saveModal(){
+  const title = $("#fTitle").value.trim();
+  if(!title){ $("#fTitle").focus(); return; }
+  const data = {title, text:$("#fText").value.trim(), rubric:$("#fRubric").value, format:$("#fFormat").value};
+  if(editingId){
+    const i = ideas.find(x=>x.id===editingId); Object.assign(i,data);
+  }else{
+    ideas.unshift({id:"u-"+Date.now(), ...data, mine:true, fav:false, used:false});
+  }
+  save(); closeModal(); render();
+}
+
+/* ---------- Генератор «Подкинь идею» ---------- */
+function surprise(){
+  const pool = ideas.filter(i=>!i.used);
+  const src = pool.length?pool:ideas;
+  if(!src.length) return;
+  const i = src[Math.floor(Math.random()*src.length)];
+  const r = rubMap[i.rubric]||{name:i.rubric};
+  $("#genRubric").textContent = (r.emoji||"")+" "+r.name+" · "+i.format;
+  $("#genTitle").textContent = i.title;
+  $("#genText").textContent = i.text || "Бери и снимай 🌿";
+  $("#gen").classList.add("show");
+  $("#gen").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+/* ---------- Экспорт / импорт ---------- */
+function exportData(){
+  const blob = new Blob([JSON.stringify(ideas,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ideas-vikablog-"+new Date().toISOString().slice(0,10)+".json";
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function importData(file){
+  const fr = new FileReader();
+  fr.onload = ()=>{
+    try{
+      const data = JSON.parse(fr.result);
+      if(Array.isArray(data)){ ideas = data; save(); render(); alert("Загружено идей: "+data.length); }
+      else alert("Файл не похож на копию идей.");
+    }catch(e){ alert("Не удалось прочитать файл."); }
+  };
+  fr.readAsText(file);
+}
+function restoreSeed(){
+  if(!confirm("Добавить недостающие базовые идеи? Твои идеи и пометки останутся.")) return;
+  const have = new Set(ideas.map(i=>i.id));
+  seedIdeas().forEach(s=>{ if(!have.has(s.id)) ideas.push(s); });
+  save(); render();
+}
+
+/* ---------- События ---------- */
+$("#search").oninput = e=>{ state.q=e.target.value; render(); };
+$("#formatFilter").onchange = e=>{ state.format=e.target.value; render(); };
+$("#favFilter").onclick = ()=>{ state.favOnly=!state.favOnly; render(); };
+$("#hideUsed").onclick = ()=>{ state.hideUsed=!state.hideUsed; render(); };
+$("#surprise").onclick = surprise;
+$("#genClose").onclick = ()=>$("#gen").classList.remove("show");
+$("#addBtn").onclick = ()=>openModal(null);
+$("#cancelBtn").onclick = closeModal;
+$("#saveBtn").onclick = saveModal;
+$("#overlay").onclick = e=>{ if(e.target.id==="overlay") closeModal(); };
+$("#exportBtn").onclick = exportData;
+$("#importBtn").onclick = ()=>$("#importFile").click();
+$("#importFile").onchange = e=>{ if(e.target.files[0]) importData(e.target.files[0]); };
+$("#restoreBtn").onclick = restoreSeed;
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+
+/* ---------- Вкладки ---------- */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("on",x===t));
+    document.getElementById("tab-ideas").hidden = t.dataset.tab!=="ideas";
+    document.getElementById("tab-pack").hidden  = t.dataset.tab!=="pack";
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+});
+
+/* ---------- Автосохранение упаковки ---------- */
+function initPack(){
+  document.querySelectorAll("[data-save]").forEach(el=>{
+    const k="pack_"+el.dataset.save;
+    const v=localStorage.getItem(k);
+    if(v!==null) el.value=v;
+    el.addEventListener("input",()=>localStorage.setItem(k,el.value));
+  });
+  document.querySelectorAll("[data-check]").forEach(el=>{
+    const k="packchk_"+el.dataset.check;
+    if(localStorage.getItem(k)==="1") el.checked=true;
+    el.addEventListener("change",()=>localStorage.setItem(k,el.checked?"1":"0"));
+  });
+}
+
+/* ---------- Старт ---------- */
+fillRubricSelect();
+load();
+render();
+initPack();
+</script>
+</body>
+</html>
